@@ -1,4 +1,4 @@
-package com.wr;
+package com.mybatisTest.wr;
 
 public class User {
     private Integer id;

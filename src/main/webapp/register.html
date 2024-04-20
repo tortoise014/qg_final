@@ -12,7 +12,7 @@
         <h1>欢迎注册</h1>
         <span>已有帐号？</span> <a href="login.html">登录</a>
     </div>
-    <form id="reg-form" action="#" method="get">
+    <form id="reg-form" action="/try2/registerServlet" method="get">
 
         <table>
 
@@ -34,7 +34,14 @@
                     <span id="password_err" class="err_msg" style="display: none">密码格式有误</span>
                 </td>
             </tr>
-
+            <tr>
+                <td class="inputs">
+                    <select name="identity" id="identity">
+                        <option value="student">学生</option>
+                        <option value="teacher">老师</option>
+                    </select>
+                </td>
+            </tr>
 
         </table>
 

@@ -136,3 +136,16 @@ input[type="button"]:active, input[type="submit"]:active {
 #reg_btn{
     margin-right:50px; width: 285px; height: 45px; margin-top:20px;
 }
+/* 在 register.css 文件末尾添加的样式 */
+.select-wrapper::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-top: 6px solid #333333; /* 箭头颜色 */
+}
