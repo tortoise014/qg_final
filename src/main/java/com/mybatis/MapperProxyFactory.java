@@ -1,9 +1,5 @@
 package com.mybatis;
 
-import com.sun.org.glassfish.external.statistics.impl.StringStatisticImpl;
-import com.wr.User;
-
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;
@@ -26,7 +22,7 @@ public class MapperProxyFactory {
 
 
 
-        Object proxyInstance = Proxy.newProxyInstance(ClassLoader.getSystemClassLoader(), new Class[]{mapper}, new InvocationHandler() {
+        Object proxyInstance = Proxy.newProxyInstance(mapper.getClassLoader(), new Class[]{mapper}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
@@ -84,10 +80,13 @@ public class MapperProxyFactory {
 
                 ResultSetMetaData metaData = rs.getMetaData();//获取结果集
                 List<String> columnList = new ArrayList<>();
-                for (int i = 0; i < metaData.getColumnCount(); i++) {
-                    columnList.add(metaData.getColumnName(i + 1));
+                if(metaData.getColumnCount()>0) {
+                    for (int i = 1; i <= metaData.getColumnCount(); i++) {
+                        columnList.add(metaData.getColumnName(i));
+                    }
+                }else{
+                    System.out.println("没有东西");
                 }
-
                 Map<String,Method> setterMethodMapping=new HashMap<>();
                 for (Method declaredMethod : resultType.getDeclaredMethods()) {
                     if(declaredMethod.getName().startsWith("set")){
@@ -109,27 +108,31 @@ public class MapperProxyFactory {
                     for (int i = 0; i < columnList.size(); i++) {
                         String column = columnList.get(i);
                         Method setterMethod = setterMethodMapping.get(column);
+                        if (setterMethod == null) {
+                            // 如果未找到对应的setter方法，可以选择跳过该列的处理或者记录警告信息
+                            System.out.println("Warning: Setter method not found for column " + column);
+                            continue;
+                        }
                         Class clazz = setterMethod.getParameterTypes()[0];
                         TypeHandler typeHandler=typeHandlerMap.get(clazz);
                         setterMethod.invoke(instance,typeHandler.getResult(rs,column));
 
                     }
                     list.add(instance);
-                    /*User user=new User();
-                    user.setId(rs.getInt("id"));
-                    user.setUsername(rs.getString("username"));
-                    user.setPassword(rs.getString("password"));
-                    list.add(user);*/
+
                 }
 
 
                 connection.close();
-                if(method.getReturnType().equals(List.class)){
-                    result=list;
-                }else{
-                    result=list.get(0);
+                if (!list.isEmpty()) {
+                    if (method.getReturnType().equals(List.class)) {
+                        result = list;
+                    } else {
+                        result = list.get(0);
+                    }
+                } else {
+                    return null;
                 }
-
 
                 return result;
             }
@@ -137,7 +140,7 @@ public class MapperProxyFactory {
         return (T)proxyInstance;
         }
     private static Connection getConnection() throws SQLException {
-        Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/db1?characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Shanghai",
+        Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/qg?characterEncoding=utf-8&allowPublicKeyRetrieval=true&useSSL=false",
                 "root", "Wr20050305");
         return connection;
     }
