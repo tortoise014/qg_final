@@ -1,5 +1,6 @@
 package com.service;
 
+import com.dao.mapper.StudentMapper;
 import com.dao.mapper.TeacherMapper;
 import com.dao.pojo.Teacher;
 import com.mybatis.MapperProxyFactory;
@@ -10,6 +11,10 @@ public class TeacherService {
         TeacherMapper teacherMapper = MapperProxyFactory.getMapper(TeacherMapper.class);
         Teacher teacher = teacherMapper.select(username, password);
         return teacher;
-
+    }
+  public void RefineTeacherInfo(String name,String email,String qq,String introduction,String username){
+      TeacherMapper teacherMapper = MapperProxyFactory.getMapper(TeacherMapper.class);
+        teacherMapper.RefineTeacherInfo(name,email,qq,introduction,username);
+        return;
     }
 }

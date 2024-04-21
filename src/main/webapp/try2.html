@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程选择</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #35424a;
+            color: #fff;
+            padding-top: 20px;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar ul li {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #fff;
+            transition: background-color 0.3s;
+        }
+        .sidebar ul li:hover {
+            background-color: #4a5b63;
+        }
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+        .user-info {
+            background-color: #f0f0f0;
+            padding: 10px;
+            border-bottom: 1px solid #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .user-options ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .user-options ul li {
+            padding: 5px 0;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .user-options ul li:hover {
+            background-color: #ddd;
+        }
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .course {
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            transition: transform 0.3s;
+        }
+        .course:hover {
+            transform: translateY(-5px);
+        }
+        .course h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #35424a;
+        }
+        .course p {
+            margin: 5px 0;
+            color: #666;
+        }
+        .search-container {
+            margin-bottom: 20px;
+        }
+        .search-container input[type="text"] {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .search-container button {
+            padding: 8px 20px;
+            background-color: #35424a;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .search-container button:hover {
+            background-color: #4a5b63;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="sidebar">
+        <ul>
+            <li onclick="showCourseList()">选课</li>
+            <li onclick="showSchedule()">已在课表的课程</li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="user-info">
+            <span id="username">用户</span>
+            <div class="user-options" id="userOptions" style="display: none;">
+                <ul>
+                    <li>退出</li>
+                    <li>修改个人信息</li>
+                </ul>
+            </div>
+        </div>
+        <div class="search-container">
+            <input type="text" placeholder="搜索课程">
+            <button>搜索</button>
+        </div>
+        <div class="course-list" id="courseList">
+            <!-- 这里是动态生成的课程列表 -->
+        </div>
+    </div>
+</div>
+
+<script>
+    // 模拟从后端获取的课程数据
+    const courses = [
+        { name: 'Web开发入门', startTime: '2024-05-01', endTime: '2024-06-01', teacher: '张老师' },
+        { name: 'JavaScript基础', startTime: '2024-05-15', endTime: '2024-06-15', teacher: '李老师' },
+        { name: '前端框架实战', startTime: '2024-06-01', endTime: '2024-07-01', teacher: '王老师' }
+        // 添加更多课程数据
+    ];
+
+    const courseList = document.getElementById('courseList');
+    const usernameSpan = document.getElementById('username');
+    const userOptionsDiv = document.getElementById('userOptions');
+
+    // 动态生成课程列表
+    function renderCourseList() {
+        courseList.innerHTML = '';
+        courses.forEach(course => {
+            const courseElement = document.createElement('div');
+            courseElement.classList.add('course');
+            courseElement.innerHTML = `
+        <h3>${course.name}</h3>
+        <p>时间：${course.startTime} - ${course.endTime}</p>
+        <p>老师：${course.teacher}</p>
+        <button>加入课程</button>
+      `;
+            courseList.appendChild(courseElement);
+        });
+    }
+
+    // 显示选课列表
+    function showCourseList() {
+        renderCourseList();
+        usernameSpan.textContent = '用户';
+        userOptionsDiv.style.display = 'none';
+    }
+
+    // 显示已选课程列表
+    function showSchedule() {
+        // 这里可以根据用户的选课情况进行展示
+        courseList.innerHTML = '<p>已在课表的课程</p>';
+        usernameSpan.textContent = '张三'; // 假设用户为张三
+        userOptionsDiv.style.display = 'block';
+    }
+</script>
+
+</body>
+</html>

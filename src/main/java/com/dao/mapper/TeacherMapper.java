@@ -5,6 +5,7 @@ import com.dao.pojo.Teacher;
 import com.mybatis.Insert;
 import com.mybatis.Param;
 import com.mybatis.Select;
+import com.mybatis.Update;
 
 public interface TeacherMapper {
     @Select("select *from teachers where username=#{username} and password =#{password}")
@@ -15,5 +16,9 @@ public interface TeacherMapper {
 
     @Insert("insert INTO teachers (username, password) VALUES (#{username}, #{password})")
     void addTeacher(@Param("username") String username,@Param("password") String password);
+
+    @Update("UPDATE teachers SET name = #{name}, email = #{email}, qq = #{qq}, introduction = #{introduction} WHERE username = #{username}")
+    void RefineTeacherInfo(@Param("name") String name, @Param("email") String email, @Param("qq") String qq,
+                       @Param("introduction") String introduction, @Param("username") String username);
 
 }

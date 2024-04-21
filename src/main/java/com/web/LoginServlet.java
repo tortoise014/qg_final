@@ -11,10 +11,7 @@ import com.sun.javafx.image.BytePixelSetter;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import javax.servlet.http.*;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
@@ -27,6 +24,8 @@ public class LoginServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+        String rememberMe = request.getParameter("rememberMe");
+
         String role = request.getParameter("role");
         if ("teacher".equals(role)) {
             Teacher teacher = null;
@@ -38,16 +37,25 @@ public class LoginServlet extends HttpServlet {
             try {
                 if (teacher != null) {
                     //登陆成功
+
+                    if("1".equals(rememberMe)){
+                        //创建cookie
+                        Cookie c_username=new Cookie("username",username);
+                        Cookie c_password=new Cookie("password",password);
+                        //发宋
+                        c_username.setMaxAge(60*60*24*7); // 设置 Cookie 的过期时间为 1 小时
+                        c_password.setMaxAge(60*60*24*7); // 设置 Cookie 的过期时间为 1 小时
+
+                        response.addCookie(c_password); // 将 Cookie 添加到 HTTP 响应中，发送给客户端
+                        response.addCookie(c_username); // 将 Cookie 添加到 HTTP 响应中，发送给客户端     }
                     HttpSession session = request.getSession();
                     session.setAttribute("username", username);
                     session.setAttribute("password", password);
                     session.setAttribute("role",role);
-                    writer.write("登陆成功");
-                    String errorMsg = username;
-                    String encodedErrorMsg = java.net.URLEncoder.encode(errorMsg, "UTF-8");
-                    response.sendRedirect("/try2/StuInfoFrom.html?studentName=" + encodedErrorMsg);
-                    writer.write("<script>setTimeout(function() { window.location.href = 'StuInfoFrom.html'; }, 3000);</script>");
 
+                    writer.write("登陆成功");
+                    //到老师主页面
+                        }
                 } else {
                     writer.write("登陆失败");
                     //登陆失败
@@ -61,23 +69,36 @@ public class LoginServlet extends HttpServlet {
         }else {
             Student student=null;
             student = studentService.loginStudent(username, password);
-
             response.setContentType("text/html;charset=utf-8");
             PrintWriter writer = response.getWriter();
             try {
                 if (student != null) {
                     //登陆成功
+                    if("1".equals(rememberMe)){
+                        //创建cookie
+                        Cookie c_username=new Cookie("username",username);
+                        Cookie c_password=new Cookie("password",password);
+                        //发宋
+                        c_username.setMaxAge(60*60*24*7); // 设置 Cookie 的过期时间为 1 小时
+                        c_password.setMaxAge(60*60*24*7); // 设置 Cookie 的过期时间为 1 小时
+
+                        response.addCookie(c_password); // 将 Cookie 添加到 HTTP 响应中，发送给客户端
+                        response.addCookie(c_username); // 将 Cookie 添加到 HTTP 响应中，发送给客户端     }
+                        HttpSession session = request.getSession();
+                        session.setAttribute("username", username);
+                        session.setAttribute("password", password);
+                        session.setAttribute("role",role);
+
+                        writer.write("登陆成功");
+                        //到学生主页面
+                    }
                     HttpSession session = request.getSession();
                     session.setAttribute("username", username);
                     session.setAttribute("password", password);
                     session.setAttribute("role",role);
                     writer.write("登陆成功");
-                    String errorMsg = username;
-                    String encodedErrorMsg = java.net.URLEncoder.encode(errorMsg, "UTF-8");
-                    response.sendRedirect("/try2/StuInfoFrom.html?studentName=" + encodedErrorMsg);
-                    //跳到完善信息
-                    writer.write("<script>setTimeout(function() { window.location.href = 'StuInfoFrom.html'; }, 3000);</script>");
-                } else {
+                    //到学生主页面
+                      } else {
                     writer.write("登陆失败");
                     //登陆失败
 

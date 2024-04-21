@@ -34,7 +34,8 @@ public class RefineStuInfoServlet extends HttpServlet {
         String introduction = request.getParameter("introduction");
 
         studentService.RefineStuInfo(name,student_id,grade,introduction,username);
-        //进入选课页面
+        System.out.println("成功");
+        //进去
 
     }
 }
