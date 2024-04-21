@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生信息表单</title>
+    <link rel="stylesheet" href="css/StuStyles.css">
+</head>
+<body>
+<div id="student"></div>
+<div id="app">
+    <form @submit.prevent="submitForm">
+        <div class="form-group">
+            <label for="name">姓名：</label>
+            <input type="text" id="name" v-model="student.name" required>
+        </div>
+        <div class="form-group">
+            <label for="studentId">学号：</label>
+            <input type="number" id="studentId" v-model.number="student.studentId" required>
+        </div>
+        <div class="form-group">
+            <label for="grade">成绩：</label>
+            <input type="text" id="grade" v-model="student.grade" required>
+        </div>
+        <div class="form-group">
+            <label for="introduction">简介：</label>
+            <textarea id="introduction" v-model="student.introduction"></textarea>
+        </div>
+        <button type="submit">提交</button>
+    </form>
+</div>
+
+<script src="js/vue.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            student: {
+                name: '',
+                studentId: '', // 默认为kong
+                grade: '',
+                introduction: ''
+            }
+        },
+        methods: {
+            submitForm() {
+                const formData = new FormData();
+                formData.append('name', this.student.name);
+                formData.append('student_id', this.student.studentId);
+                formData.append('grade', this.student.grade);
+                formData.append('introduction', this.student.introduction);
+
+                axios.post('RefineStuInfoServlet', formData)
+                    .then(response => {
+                        console.log(response.data);
+                        // 在这里处理后端返回的数据或进行页面跳转等操作
+                    })
+                    .catch(error => {
+                        console.error('Error submitting form:', error);
+                    });
+            }
+        }
+    });
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedLoginMsg = urlParams.get('studentName');
+    const loginMsg = decodeURIComponent(encodedLoginMsg);
+
+    console.log('Error message from URL:', loginMsg); // 输出获取到的错误消息
+
+    // 显示消息
+    if (loginMsg) {
+        document.getElementById('student').innerText = loginMsg;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>完善老师信息</title>
+    <link rel="stylesheet" href="css/TeacherStyles.css">
+</head>
+
+<body>
+<div id="app">
+    <form @submit.prevent="submitForm">
+        <div class="form-group">
+            <label for="name">姓名：</label>
+            <input type="text" id="name" v-model="teacher.name" required>
+        </div>
+        <div class="form-group">
+            <label for="email">邮箱：</label>
+            <input type="email" id="email" v-model="teacher.email" required>
+        </div>
+        <div class="form-group">
+            <label for="qq">QQ：</label>
+            <input type="text" id="qq" v-model="teacher.qq" required>
+        </div>
+        <div class="form-group">
+            <label for="introduction">简介：</label>
+            <textarea id="introduction" v-model="teacher.introduction"></textarea>
+        </div>
+        <button type="submit">提交</button>
+    </form>
+</div>
+
+<script src="js/vue.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<script>
+    const app = new Vue({
+        el: '#app',
+        data: {
+            teacher: {
+                name: '',
+                email: '',
+                qq: '',
+                introduction: ''
+            }
+        },
+        methods: {
+            submitForm() {
+                const formData = new FormData();
+                formData.append('name', this.teacher.name);
+                formData.append('email', this.teacher.email);
+                formData.append('qq', this.teacher.qq);
+                formData.append('introduction', this.teacher.introduction);
+
+                axios.post('RefineTeacherInfoServlet', formData)
+                    .then(response => {
+                        console.log(response.data);
+                        // 在这里处理后端返回的数据或进行页面跳转等操作
+                    })
+                    .catch(error => {
+                        console.error('Error submitting form:', error);
+                    });
+            }
+        }
+    });
+</script>
+</body>
+
+</html>

@@ -1,0 +1,53 @@
+/* TeacherStyles.css */
+
+/* Reset default margin and padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Style form container */
+#app {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Style form groups */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* Style labels */
+label {
+    display: block;
+    font-weight: bold;
+}
+
+/* Style input fields */
+input[type="text"],
+input[type="email"],
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+/* Style submit button */
+button[type="submit"] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* Hover effect for submit button */
+button[type="submit"]:hover {
+    background-color: #45a049;
+}

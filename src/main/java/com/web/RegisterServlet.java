@@ -51,7 +51,7 @@ public class RegisterServlet extends HttpServlet {
             TeacherMapper teacherMapper = MapperProxyFactory.getMapper(TeacherMapper.class);
             Teacher t = teacherMapper.selectByTeacherName(username);
             if(t==null){
-                teacherMapper.add(username,password);
+                teacherMapper.addTeacher(username,password);
             }else{
                 response.setContentType("text/html;charset=utf-8");
                 response.getWriter().write("用户名已存在");

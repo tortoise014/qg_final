@@ -14,6 +14,6 @@ public interface TeacherMapper {
     Teacher selectByTeacherName(@Param("username") String username);
 
     @Insert("insert INTO teachers (username, password) VALUES (#{username}, #{password})")
-    void add(@Param("username") String username,@Param("password") String password);
+    void addTeacher(@Param("username") String username,@Param("password") String password);
 
 }
