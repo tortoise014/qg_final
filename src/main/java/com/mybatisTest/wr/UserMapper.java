@@ -9,7 +9,7 @@ public interface UserMapper {
     public List<User> selectUser(@Param("username") String username);
 
     @Select("select * from tb_user where id=#{id}")
-    public User selectById(@Param("id")Integer id);
+    User selectById(@Param("id")Integer id);
 @Insert("insert INTO tb_user (username, password) VALUES (#{username}, #{password})")
     void add(@Param("username") String username,@Param("password") String password);
     @Update("UPDATE tb_user SET username = #{username}, password = #{password} WHERE username = #{username}")

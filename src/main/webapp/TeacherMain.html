@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师主页</title>
+    <!-- 引入 Element UI 的 CSS 文件 -->
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">    <style>
+        #app {
+            display: flex;
+            height: 100vh;
+        }
+        #sidebar {
+            width: 200px;
+            background-color: #f0f2f5;
+            padding: 20px;
+        }
+        #content {
+            flex: 1;
+            padding: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <!-- 左侧导航栏 -->
+    <div id="sidebar">
+        <el-menu :default-active="currentView" class="el-menu-vertical-demo" @select="handleMenuSelect">
+            <el-menu-item index="teacherInfo">个人信息</el-menu-item>
+            <el-menu-item index="createCourse">创建课程</el-menu-item>
+            <el-menu-item index="manageCourses">管理课程</el-menu-item>
+            <el-menu-item index="viewStudents">查看报名学生情况</el-menu-item>
+            <el-menu-item index="addQuestions">添加题目</el-menu-item>
+            <el-menu-item index="viewAnswers">查看学生答题情况</el-menu-item>
+            <el-menu-item index="statistics">统计分析</el-menu-item>
+            <el-menu-item index="discussion">讨论区</el-menu-item>
+        </el-menu>
+    </div>
+
+    <!-- 右侧内容区域 -->
+    <div id="content">
+        <div v-show="currentView === 'teacherInfo'">
+            <h1>个人信息页面</h1>
+            <!-- 个人信息展示及修改表单 -->
+        </div>
+        <div v-show="currentView === 'createCourse'">
+            <h1>创建课程页面</h1>
+            <!-- 创建课程表单 -->
+        </div>
+        <div v-show="currentView === 'manageCourses'">
+            <h1>管理课程页面</h1>
+            <!-- 课程列表及编辑按钮 -->
+        </div>
+        <div v-show="currentView === 'viewStudents'">
+            <h1>查看报名学生情况页面</h1>
+            <!-- 学生列表 -->
+        </div>
+        <div v-show="currentView === 'addQuestions'">
+            <h1>添加题目页面</h1>
+            <!-- 添加题目表单 -->
+        </div>
+        <div v-show="currentView === 'viewAnswers'">
+            <h1>查看学生答题情况页面</h1>
+            <!-- 学生答题列表 -->
+        </div>
+        <div v-show="currentView === 'statistics'">
+            <h1>统计分析页面</h1>
+            <!-- 统计图表等 -->
+        </div>
+        <div v-show="currentView === 'discussion'">
+            <h1>讨论区页面</h1>
+            <!-- 讨论区内容 -->
+        </div>
+    </div>
+</div>
+
+<!-- 引入 Vue.js 和 Element UI 的 JavaScript 文件 -->
+<script src="js/axios-0.18.0.js"></script>
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                currentView: 'teacherInfo'
+            };
+        },
+        methods: {
+            handleMenuSelect(index) {
+                this.currentView = index;
+            }
+        }
+    });
+</script>
+</body>
+</html>

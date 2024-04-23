@@ -12,9 +12,5 @@ public class TeacherService {
         Teacher teacher = teacherMapper.select(username, password);
         return teacher;
     }
-  public void RefineTeacherInfo(String name,String email,String qq,String introduction,String username){
-      TeacherMapper teacherMapper = MapperProxyFactory.getMapper(TeacherMapper.class);
-        teacherMapper.RefineTeacherInfo(name,email,qq,introduction,username);
-        return;
-    }
+
 }

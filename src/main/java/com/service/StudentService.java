@@ -17,9 +17,5 @@ public class StudentService {
     }
 
 
-    public void RefineStuInfo(String name,Integer student_id,String grande,String introduction,String username ){
-        StudentMapper studentMapper = MapperProxyFactory.getMapper(StudentMapper.class);
-        studentMapper.UpdateStuInfo(name,student_id,grande,introduction,username);
-        return;
-    }
+
 }
