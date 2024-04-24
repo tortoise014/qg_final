@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>教师主页</title>
     <!-- 引入 Element UI 的 CSS 文件 -->
-    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">    <style>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+    <style>
         #app {
             display: flex;
             height: 100vh;
@@ -18,6 +19,17 @@
         #content {
             flex: 1;
             padding: 20px;
+        }
+        .container {
+            margin: 20px;
+        }
+        .course-item {
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+        .student-item {
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -38,30 +50,143 @@
     </div>
 
     <!-- 右侧内容区域 -->
-    <div id="content">
+    <div id="content" class="container">
         <div v-show="currentView === 'teacherInfo'">
             <h1>个人信息页面</h1>
-            <!-- 个人信息展示及修改表单 -->
+            <div class="info-item">
+                <p>姓名：{{ userInfo.name }}</p>
+            </div>
+            <div class="info-item">
+                <p>Email：{{ userInfo.email }}</p>
+            </div>
+            <div class="info-item">
+                <p>QQ号：{{ userInfo.qq }}</p>
+            </div>
+            <div class="info-item">
+                <p>个人简介：{{ userInfo.introduction }}</p>
+            </div>
+            <!-- 修改按钮 -->
+            <el-button type="primary" @click="handleEdit">修改信息</el-button>
+            <!-- 修改表单 -->
+            <div v-show="isEditing">
+                <!-- 在这里添加修改表单 -->
+                <el-form :model="editForm" label-width="80px">
+                    <el-form-item label="用户名">
+                        <el-input v-model="editForm.username" :disabled="true"></el-input>
+                    </el-form-item>
+                    <el-form-item label="密码">
+                        <el-input v-model="editForm.password" type="password"></el-input>
+                    </el-form-item>
+                    <el-form-item label="姓名">
+                        <el-input v-model="editForm.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Email">
+                        <el-input v-model="editForm.email"></el-input>
+                    </el-form-item>
+                    <el-form-item label="QQ号">
+                        <el-input v-model="editForm.qq"></el-input>
+                    </el-form-item>
+                    <el-form-item label="个人简介">
+                        <el-input type="textarea" v-model="editForm.introduction"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitEdit">提交修改</el-button>
+                    </el-form-item>
+                </el-form>
+            </div>
         </div>
         <div v-show="currentView === 'createCourse'">
             <h1>创建课程页面</h1>
             <!-- 创建课程表单 -->
+            <el-form :model="createCourseForm" label-width="80px">
+                <el-form-item label="课程名字">
+                    <el-input v-model="createCourseForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="描述">
+                    <el-input type="textarea" v-model="createCourseForm.description"></el-input>
+                </el-form-item>
+                <el-form-item label="开始日期">
+                    <el-input v-model="createCourseForm.startDate" ></el-input>
+                </el-form-item>
+                <el-form-item label="结束日期">
+                    <el-input v-model="createCourseForm.endDate"></el-input>
+                </el-form-item>
+                <el-form-item label="最大学生数量">
+                    <el-input v-model="createCourseForm.maxStudents" type="number"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitCreateCourse">创建课程</el-button>
+                </el-form-item>
+            </el-form>
         </div>
         <div v-show="currentView === 'manageCourses'">
             <h1>管理课程页面</h1>
-            <!-- 课程列表及编辑按钮 -->
+            <div class="course-item" v-for="course in courses" :key="course.id">
+                <h2>{{ course.name }}</h2>
+                <p>描述：{{ course.description }}</p>
+                <p>开始日期：{{ course.start_date }}</p>
+                <p>结束日期：{{ course.end_date }}</p>
+                <p>最大学生数量：{{ course.capacity }}</p>
+                <p>最大学生数量：{{ course.teacher_id }}</p>
+                <el-button type="primary" @click="editCourse(course)">编辑</el-button>
+                <el-button type="danger" @click="deleteCourse(course)">删除</el-button>
+            </div>
         </div>
         <div v-show="currentView === 'viewStudents'">
             <h1>查看报名学生情况页面</h1>
             <!-- 学生列表 -->
+            <div class="student-item" v-for="student in students" :key="student.id">
+                <p>姓名：{{ student.name }}</p>
+                <p>Email：{{ student.email }}</p>
+                <p>QQ号：{{ student.qq }}</p>
+            </div>
+            <a href="TeacherMain.html">返回主页</a>
         </div>
         <div v-show="currentView === 'addQuestions'">
             <h1>添加题目页面</h1>
             <!-- 添加题目表单 -->
+            <el-form :model="questionForm" label-width="80px">
+                <el-form-item label="选择课程">
+                    <el-select v-model="questionForm.courseId" placeholder="请选择课程">
+                        <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="题目名称">
+                    <el-input v-model="questionForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="题目描述">
+                    <el-input type="textarea" v-model="questionForm.description"></el-input>
+                </el-form-item>
+                <el-form-item label="题目答案">
+                    <el-input v-model="questionForm.answer"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitQuestion">提交题目</el-button>
+                </el-form-item>
+            </el-form>
+            <a href="TeacherMain.html">返回主页</a>
         </div>
+        <!-- 查看学生答题情况页面 -->
         <div v-show="currentView === 'viewAnswers'">
             <h1>查看学生答题情况页面</h1>
-            <!-- 学生答题列表 -->
+            <el-form :model="form" label-width="80px">
+                <el-form-item label="选择课程">
+                    <el-select v-model="form.courseId" placeholder="请选择课程" @change="loadStudentRecords">
+                        <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div v-if="records.length === 0">暂无学生答题记录</div>
+            <div v-else>
+                <div class="record-item" v-for="(record, index) in records" :key="index">
+                    <p>学生姓名：{{ record.studentName }}</p>
+                    <p>课程名称：{{ record.courseName }}</p>
+                    <p>题目名称：{{ record.questionName }}</p>
+                    <p>学生答案：{{ record.answer }}</p>
+                    <p>得分：{{ record.score }}</p>
+                </div>
+            </div>
+            <a href="TeacherMain.html">返回主页</a>
         </div>
         <div v-show="currentView === 'statistics'">
             <h1>统计分析页面</h1>
@@ -81,16 +206,169 @@
 <script>
     new Vue({
         el: '#app',
+
         data() {
             return {
-                currentView: 'teacherInfo'
+                currentView: 'teacherInfo',
+                userInfo: {}, // 存储用户信息
+                editForm: {}, // 存储修改后的信息
+                isEditing: false, // 是否处于编辑状态
+                createCourseForm: { // 创建课程表单数据
+                    name: '',
+                    description: '',
+                    startDate: '',
+                    endDate: '',
+                    maxStudents: ''
+                },
+                courses: [], // 存储课程列表
+                students: [], // 存储报名学生列表
+                questionForm: { // 添加题目表单数据
+                    courseId: '', // 选择的课程ID
+                    name: '',
+                    description: '',
+                    answer: ''
+                },
+                form: {
+                    courseId: '' // 选择的课程ID
+                },
+                records: [] // 存储学生答题记录
             };
         },
         methods: {
+            // 加载用户信息
+            loadUserInfo() {
+                axios.get('teacherInfoServlet')
+                    .then(response => {
+                        this.userInfo = response.data;
+                        this.editForm = { ...this.userInfo };
+                    })
+                    .catch(error => {
+                        console.error('Error loading user info:', error);
+                    });
+            },
+
+            // 加载课程列表
+            loadCourses() {
+                axios.get('/try2/getCoursesServlet')
+                    .then(response => {
+
+                        this.courses = response.data;
+
+                    })
+                    .catch(error => {
+                        console.error('Error loading courses:', error);
+                    });
+            },
+            // 加载报名学生列表
+            loadStudents() {
+                axios.get('getStudentsServlet')
+                    .then(response => {
+                        this.students = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error loading students:', error);
+                    });
+            },
+            // 加载学生答题记录
+            loadStudentRecords() {
+                axios.get('getStudentRecordsServlet', {
+                    params: {
+                        courseId: this.form.courseId
+                    }
+                })
+                    .then(response => {
+                        this.records = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error loading student records:', error);
+                    });
+            },
+            // 处理左侧导航栏点击事件
             handleMenuSelect(index) {
                 this.currentView = index;
+                if (index === 'manageCourses') {
+                    this.loadCourses();
+                } else if (index === 'viewStudents') {
+                    this.loadStudents();
+                }
+            },
+            // 处理点击修改按钮
+            handleEdit() {
+                this.isEditing = true;
+            },
+            // 提交修改
+            submitEdit() {
+
+                axios.post('/try2/editTeacherInfoServlet', this.editForm)
+                    .then(response => {
+                        alert("修改成功");
+                        console.log('Submit edit clicked')
+                        console.log('Info updated successfully:', response.data);
+                        this.loadUserInfo();
+                        this.isEditing = false;
+
+                    })
+                    .catch(error => {
+                        console.error('Error updating user info:', error);
+                    });
+            },
+            // 提交创建课程
+            submitCreateCourse() {
+                axios.post('/try2/createCourseServlet', this.createCourseForm)
+                    .then(response => {
+                        console.log('Course created successfully:', response.data);
+                        this.createCourseForm = {
+                            name: '',
+                            description: '',
+                            startDate: '',
+                            endDate: '',
+                            maxStudents: ''
+                        };
+                        this.loadCourses();
+                    })
+                    .catch(error => {
+                        console.error('Error creating course:', error);
+                    });
+            },
+            // 编辑课程
+            editCourse(course) {
+                console.log('Editing course:', course);
+            },
+            // 删除课程
+            deleteCourse(course) {
+                console.log('Deleting course:', course);
+            },
+            // 提交题目
+            submitQuestion() {
+                axios.post('AddQuestionServlet', this.questionForm)
+                    .then(response => {
+                        console.log('Question added successfully:', response.data);
+                        // 清空表单
+                        this.questionForm.courseId = '';
+                        this.questionForm.name = '';
+                        this.questionForm.description = '';
+                        this.questionForm.answer = '';
+                        // 提示用户添加成功
+                        this.$message.success('题目添加成功！');
+                    })
+                    .catch(error => {
+                        console.error('Error adding question:', error);
+                        // 提示用户添加失败
+                        this.$message.error('题目添加失败，请重试！');
+                    });
             }
+        },
+        mounted() {
+            this.loadUserInfo(); // 加载用户信息
+            // 根据当前视图加载相应的数据
+            if (this.currentView === 'manageCourses') {
+                this.loadCourses(); // 加载课程列表
+            } else if (this.currentView === 'viewStudents') {
+                this.loadStudents(); // 加载学生列表
+            }
+
         }
+
     });
 </script>
 </body>

@@ -1,4 +1,5 @@
-package com.mybatis;
+package com.mybatis.anation;
+
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -6,9 +7,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Delete {
-
-
+@Target(ElementType.PARAMETER)
+public @interface Param {
     String value();
 }

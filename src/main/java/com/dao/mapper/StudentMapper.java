@@ -2,10 +2,10 @@ package com.dao.mapper;
 
 import com.dao.pojo.Student;
 
-import com.mybatis.Insert;
-import com.mybatis.Param;
-import com.mybatis.Select;
-import com.mybatis.Update;
+import com.mybatis.anation.Insert;
+import com.mybatis.anation.Param;
+import com.mybatis.anation.Select;
+import com.mybatis.anation.Update;
 
 public interface StudentMapper {
     @Select("select *from students where username=#{username} and password =#{password}")

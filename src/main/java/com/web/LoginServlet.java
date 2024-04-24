@@ -48,19 +48,30 @@ public class LoginServlet extends HttpServlet {
 
                         response.addCookie(c_password); // 将 Cookie 添加到 HTTP 响应中，发送给客户端
                         response.addCookie(c_username); // 将 Cookie 添加到 HTTP 响应中，发送给客户端     }
-                    HttpSession session = request.getSession();
-                    session.setAttribute("username", username);
-                    session.setAttribute("password", password);
-                    session.setAttribute("role",role);
-                        System.out.println("2222");
+                        HttpSession session = request.getSession(false); // 获取当前会话，如果不存在则返回 null
+                        if (session != null) {
+                            session.invalidate(); // 销毁当前会话
+                        }
+
+                        session = request.getSession(true); // 创建新的会话
+                        session.setAttribute("username", username); // 存储新的用户名
+                        session.setAttribute("password", password); // 存储新的密码
+                        session.setAttribute("role", role); // 存储新的角色信息
+
 
                     //到老师主页面
                         request.getRequestDispatcher("/TeacherMain.html").forward(request,response);
                         }else{
-                        HttpSession session = request.getSession();
-                        session.setAttribute("username", username);
-                        session.setAttribute("password", password);
-                        session.setAttribute("role",role);
+                        HttpSession session = request.getSession(false); // 获取当前会话，如果不存在则返回 null
+                        if (session != null) {
+                            session.invalidate(); // 销毁当前会话
+                        }
+
+                        session = request.getSession(true); // 创建新的会话
+                        session.setAttribute("username", username); // 存储新的用户名
+                        session.setAttribute("password", password); // 存储新的密码
+                        session.setAttribute("role", role); // 存储新的角色信息
+
                         request.getRequestDispatcher("/TeacherMain.html").forward(request,response);
                     }
                 } else {
@@ -93,19 +104,31 @@ public class LoginServlet extends HttpServlet {
 
                         response.addCookie(c_password); // 将 Cookie 添加到 HTTP 响应中，发送给客户端
                         response.addCookie(c_username); // 将 Cookie 添加到 HTTP 响应中，发送给客户端     }
-                        HttpSession session = request.getSession();
-                        session.setAttribute("username", username);
-                        session.setAttribute("password", password);
-                        session.setAttribute("role",role);
+                        HttpSession session = request.getSession(false); // 获取当前会话，如果不存在则返回 null
+                        if (session != null) {
+                            session.invalidate(); // 销毁当前会话
+                        }
+
+                        session = request.getSession(true); // 创建新的会话
+                        session.setAttribute("username", username); // 存储新的用户名
+                        session.setAttribute("password", password); // 存储新的密码
+                        session.setAttribute("role", role); // 存储新的角色信息
+
                         request.getRequestDispatcher("/StudentMain.html").forward(request,response);
 
                         System.out.println("444");
                         //到学生主页面
                     }else {
-                        HttpSession session = request.getSession();
-                        session.setAttribute("username", username);
-                        session.setAttribute("password", password);
-                        session.setAttribute("role", role);
+                        HttpSession session = request.getSession(false); // 获取当前会话，如果不存在则返回 null
+                        if (session != null) {
+                            session.invalidate(); // 销毁当前会话
+                        }
+
+                        session = request.getSession(true); // 创建新的会话
+                        session.setAttribute("username", username); // 存储新的用户名
+                        session.setAttribute("password", password); // 存储新的密码
+                        session.setAttribute("role", role); // 存储新的角色信息
+
 
                         //到学生主页面
                         request.getRequestDispatcher("/StudentMain.html").forward(request, response);

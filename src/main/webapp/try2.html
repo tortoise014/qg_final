@@ -3,180 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>课程选择</title>
+    <title>教师主页</title>
+    <!-- 引入 Element UI 的 CSS 文件 -->
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-        .container {
+        #app {
             display: flex;
             height: 100vh;
         }
-        .sidebar {
+        #sidebar {
             width: 200px;
-            background-color: #35424a;
-            color: #fff;
-            padding-top: 20px;
+            background-color: #f0f2f5;
+            padding: 20px;
         }
-        .sidebar ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        .sidebar ul li {
-            padding: 10px;
-            cursor: pointer;
-            border-bottom: 1px solid #fff;
-            transition: background-color 0.3s;
-        }
-        .sidebar ul li:hover {
-            background-color: #4a5b63;
-        }
-        .main-content {
+        #content {
             flex: 1;
             padding: 20px;
         }
-        .user-info {
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-bottom: 1px solid #ccc;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
+        .container {
+            margin: 20px;
         }
-        .user-options ul {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-        }
-        .user-options ul li {
-            padding: 5px 0;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .user-options ul li:hover {
-            background-color: #ddd;
-        }
-        .course-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .course {
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            transition: transform 0.3s;
-        }
-        .course:hover {
-            transform: translateY(-5px);
-        }
-        .course h3 {
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #35424a;
-        }
-        .course p {
-            margin: 5px 0;
-            color: #666;
-        }
-        .search-container {
+        .course-item {
             margin-bottom: 20px;
-        }
-        .search-container input[type="text"] {
-            padding: 8px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            padding: 10px;
         }
-        .search-container button {
-            padding: 8px 20px;
-            background-color: #35424a;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .search-container button:hover {
-            background-color: #4a5b63;
+        .student-item {
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
-
-<div class="container">
-    <div class="sidebar">
-        <ul>
-            <li onclick="showCourseList()">选课</li>
-            <li onclick="showSchedule()">已在课表的课程</li>
-        </ul>
+<div id="app">
+    <!-- 左侧导航栏 -->
+    <div id="sidebar">
+        <el-menu :default-active="currentView" class="el-menu-vertical-demo" @select="handleMenuSelect">
+            <el-menu-item index="teacherInfo">个人信息</el-menu-item>
+            <el-menu-item index="createCourse">创建课程</el-menu-item>
+            <el-menu-item index="manageCourses">管理课程</el-menu-item>
+            <el-menu-item index="viewStudents">查看报名学生情况</el-menu-item>
+            <el-menu-item index="addQuestions">添加题目</el-menu-item>
+            <el-menu-item index="viewAnswers">查看学生答题情况</el-menu-item>
+            <el-menu-item index="statistics">统计分析</el-menu-item>
+            <el-menu-item index="discussion">讨论区</el-menu-item>
+        </el-menu>
     </div>
-    <div class="main-content">
-        <div class="user-info">
-            <span id="username">用户</span>
-            <div class="user-options" id="userOptions" style="display: none;">
-                <ul>
-                    <li>退出</li>
-                    <li>修改个人信息</li>
-                </ul>
+
+    <!-- 右侧内容区域 -->
+    <div id="content" class="container">
+        <div v-show="currentView === 'teacherInfo'">
+            <h1>个人信息页面</h1>
+            <div class="info-item">
+                <p>姓名：{{ userInfo.name }}</p>
+            </div>
+            <div class="info-item">
+                <p>Email：{{ userInfo.email }}</p>
+            </div>
+            <div class="info-item">
+                <p>QQ号：{{ userInfo.qq }}</p>
+            </div>
+            <div class="info-item">
+                <p>个人简介：{{ userInfo.introduction }}</p>
+            </div>
+            <!-- 修改按钮 -->
+            <el-button type="primary" @click="handleEdit">修改信息</el-button>
+            <!-- 修改表单 -->
+            <div v-show="isEditing">
+                <!-- 在这里添加修改表单 -->
+                <el-form :model="editForm" label-width="80px">
+                    <el-form-item label="姓名">
+                        <el-input v-model="editForm.name"></el-input>
+                    </el-form-item>
+                    <el-form-item label="Email">
+                        <el-input v-model="editForm.email"></el-input>
+                    </el-form-item>
+                    <el-form-item label="QQ号">
+                        <el-input v-model="editForm.qq"></el-input>
+                    </el-form-item>
+                    <el-form-item label="个人简介">
+                        <el-input type="textarea" v-model="editForm.introduction"></el-input>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-button type="primary" @click="submitEdit">提交修改</el-button>
+                    </el-form-item>
+                </el-form>
             </div>
         </div>
-        <div class="search-container">
-            <input type="text" placeholder="搜索课程">
-            <button>搜索</button>
+        <div v-show="currentView === 'createCourse'">
+            <h1>创建课程页面</h1>
+            <!-- 创建课程表单 -->
+            <el-form :model="createCourseForm" label-width="80px">
+                <el-form-item label="课程名字">
+                    <el-input v-model="createCourseForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="描述">
+                    <el-input type="textarea" v-model="createCourseForm.description"></el-input>
+                </el-form-item>
+                <el-form-item label="开始日期">
+                    <el-date-picker v-model="createCourseForm.startDate" type="date"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="结束日期">
+                    <el-date-picker v-model="createCourseForm.endDate" type="date"></el-date-picker>
+                </el-form-item>
+                <el-form-item label="最大学生数量">
+                    <el-input v-model="createCourseForm.maxStudents" type="number"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitCreateCourse">创建课程</el-button>
+                </el-form-item>
+            </el-form>
         </div>
-        <div class="course-list" id="courseList">
-            <!-- 这里是动态生成的课程列表 -->
+        <div v-show="currentView === 'manageCourses'">
+            <h1>管理课程页面</h1>
+            <div class="course-item" v-for="course in courses" :key="course.id">
+                <h2>{{ course.name }}</h2>
+                <p>描述：{{ course.description }}</p>
+                <p>开始日期：{{ course.startDate }}</p>
+                <p>结束日期：{{ course.endDate }}</p>
+                <p>最大学生数量：{{ course.maxStudents }}</p>
+                <el-button type="primary" @click="editCourse(course)">编辑</el-button>
+                <el-button type="danger" @click="deleteCourse(course)">删除</el-button>
+            </div>
+        </div>
+        <div v-show="currentView === 'viewStudents'">
+            <h1>查看报名学生情况页面</h1>
+            <!-- 学生列表 -->
+            <div class="student-item" v-for="student in students" :key="student.id">
+                <p>姓名：{{ student.name }}</p>
+                <p>Email：{{ student.email }}</p>
+                <p>QQ号：{{ student.qq }}</p>
+            </div>
+            <a href="TeacherMain.html">返回主页</a>
+        </div>
+        <div v-show="currentView === 'addQuestions'">
+            <h1>添加题目页面</h1>
+            <!-- 添加题目表单 -->
+            <el-form :model="questionForm" label-width="80px">
+                <el-form-item label="选择课程">
+                    <el-select v-model="questionForm.courseId" placeholder="请选择课程">
+                        <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="题目名称">
+                    <el-input v-model="questionForm.name"></el-input>
+                </el-form-item>
+                <el-form-item label="题目描述">
+                    <el-input type="textarea" v-model="questionForm.description"></el-input>
+                </el-form-item>
+                <el-form-item label="题目答案">
+                    <el-input v-model="questionForm.answer"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="submitQuestion">提交题目</el-button>
+                </el-form-item>
+            </el-form>
+            <a href="TeacherMain.html">返回主页</a>
+        </div>
+        <!-- 查看学生答题情况页面 -->
+        <div v-show="currentView === 'viewAnswers'">
+            <h1>查看学生答题情况页面</h1>
+            <el-form :model="form" label-width="80px">
+                <el-form-item label="选择课程">
+                    <el-select v-model="form.courseId" placeholder="请选择课程" @change="loadStudentRecords">
+                        <el-option v-for="course in courses" :key="course.id" :label="course.name" :value="course.id"></el-option>
+                    </el-select>
+                </el-form-item>
+            </el-form>
+            <div v-if="records.length === 0">暂无学生答题记录</div>
+            <div v-else>
+                <div class="record-item" v-for="(record, index) in records" :key="index">
+                    <p>学生姓名：{{ record.studentName }}</p>
+                    <p>课程名称：{{ record.courseName }}</p>
+                    <p>题目名称：{{ record.questionName }}</p>
+                    <p>学生答案：{{ record.answer }}</p>
+                    <p>得分：{{ record.score }}</p>
+                </div>
+            </div>
+            <a href="TeacherMain.html">返回主页</a>
+        </div>
+        <div v-show="currentView === 'statistics'">
+            <h1>统计分析页面</h1>
+            <!-- 统计图表等 -->
+        </div>
+        <div v-show="currentView === 'discussion'">
+            <h1>讨论区页面</h1>
+            <!-- 讨论区内容 -->
         </div>
     </div>
 </div>
 
+<!-- 引入 Vue.js 和 Element UI 的 JavaScript 文件 -->
+<script src="js/axios-0.18.0.js"></script>
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
 <script>
-    // 模拟从后端获取的课程数据
-    const courses = [
-        { name: 'Web开发入门', startTime: '2024-05-01', endTime: '2024-06-01', teacher: '张老师' },
-        { name: 'JavaScript基础', startTime: '2024-05-15', endTime: '2024-06-15', teacher: '李老师' },
-        { name: '前端框架实战', startTime: '2024-06-01', endTime: '2024-07-01', teacher: '王老师' }
-        // 添加更多课程数据
-    ];
-
-    const courseList = document.getElementById('courseList');
-    const usernameSpan = document.getElementById('username');
-    const userOptionsDiv = document.getElementById('userOptions');
-
-    // 动态生成课程列表
-    function renderCourseList() {
-        courseList.innerHTML = '';
-        courses.forEach(course => {
-            const courseElement = document.createElement('div');
-            courseElement.classList.add('course');
-            courseElement.innerHTML = `
-        <h3>${course.name}</h3>
-        <p>时间：${course.startTime} - ${course.endTime}</p>
-        <p>老师：${course.teacher}</p>
-        <button>加入课程</button>
-      `;
-            courseList.appendChild(courseElement);
-        });
-    }
-
-    // 显示选课列表
-    function showCourseList() {
-        renderCourseList();
-        usernameSpan.textContent = '用户';
-        userOptionsDiv.style.display = 'none';
-    }
-
-    // 显示已选课程列表
-    function showSchedule() {
-        // 这里可以根据用户的选课情况进行展示
-        courseList.innerHTML = '<p>已在课表的课程</p>';
-        usernameSpan.textContent = '张三'; // 假设用户为张三
-        userOptionsDiv.style.display = 'block';
-    }
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                currentView: 'teacherInfo',
+                userInfo: {}, // 存储用户信息
+                editForm: {}, // 存储修改后的信息
+                isEditing: false, // 是否处于编辑状态
+                createCourseForm: { // 创建课程表单数据
+                    name: '',
+                    description: '',
+                    startDate: '',
+                    endDate: '',
+                    maxStudents: ''
+                },
+                courses: [], // 存储课程列表
+                students: [], // 存储报名学生列表
+                questionForm: { // 添加题目表单数据
+                    courseId: '', // 选择的课程ID
+                    name: '',
+                    description: '',
+                    answer: ''
+                },
+                form: {
+                    courseId: '' // 选择的课程ID
+                },
+                records: [] // 存储学生答题记录
+            };
+        },
+        methods: {
+            // 加载用户信息
+            loadUserInfo() {
+                axios.get('TeacherInfoServlet')
+                    .then(response => {
+                        this.userInfo = response.data;
+                        this.editForm = { ...this.userInfo };
+                    })
+                    .catch(error => {
+                        console.error('Error loading user info:', error);
+                    });
+            },
+            // 加载课程列表
+            loadCourses() {
+                axios.get('GetCoursesServlet')
+                    .then(response => {
+                        this.courses = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error loading courses:', error);
+                    });
+            },
+            // 加载报名学生列表
+            loadStudents() {
+                axios.get('GetStudentsServlet')
+                    .then(response => {
+                        this.students = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error loading students:', error);
+                    });
+            },
+            // 加载学生答题记录
+                loadStudentRecords() {
+                axios.get('GetStudentRecordsServlet', {
+                    params: {
+                        courseId: this.form.courseId
+                    }
+                })
+                    .then(response => {
+                        this.records = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error loading student records:', error);
+                    });
+            },
+            // 处理左侧导航栏点击事件
+            handleMenuSelect(index) {
+                this.currentView = index;
+                if (index === 'manageCourses') {
+                    this.loadCourses();
+                } else if (index === 'viewStudents') {
+                    this.loadStudents();
+                }
+            },
+            // 处理点击修改按钮
+            handleEdit() {
+                this.isEditing = true;
+            },
+            // 提交修改
+            submitEdit() {
+                axios.post('editTeacherInfoServlet', this.editForm)
+                    .then(response => {
+                        console.log('Info updated successfully:', response.data);
+                        this.loadUserInfo();
+                        this.isEditing = false;
+                    })
+                    .catch(error => {
+                        console.error('Error updating user info:', error);
+                    });
+            },
+            // 提交创建课程
+            submitCreateCourse() {
+                axios.post('CreateCourseServlet', this.createCourseForm)
+                    .then(response => {
+                        console.log('Course created successfully:', response.data);
+                        this.createCourseForm = {
+                            name: '',
+                            description: '',
+                            startDate: '',
+                            endDate: '',
+                            maxStudents: ''
+                        };
+                        this.loadCourses();
+                    })
+                    .catch(error => {
+                        console.error('Error creating course:', error);
+                    });
+            },
+            // 编辑课程
+            editCourse(course) {
+                console.log('Editing course:', course);
+            },
+            // 删除课程
+            deleteCourse(course) {
+                console.log('Deleting course:', course);
+            },
+            // 提交题目
+            submitQuestion() {
+                axios.post('AddQuestionServlet', this.questionForm)
+                    .then(response => {
+                        console.log('Question added successfully:', response.data);
+                        // 清空表单
+                        this.questionForm.courseId = '';
+                        this.questionForm.name = '';
+                        this.questionForm.description = '';
+                        this.questionForm.answer = '';
+                        // 提示用户添加成功
+                        this.$message.success('题目添加成功！');
+                    })
+                    .catch(error => {
+                        console.error('Error adding question:', error);
+                        // 提示用户添加失败
+                        this.$message.error('题目添加失败，请重试！');
+                    });
+            }
+        },
+        mounted() {
+            this.loadUserInfo();
+        }
+    });
 </script>
-
 </body>
 </html>

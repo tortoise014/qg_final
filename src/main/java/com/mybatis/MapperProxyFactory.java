@@ -1,5 +1,7 @@
 package com.mybatis;
 
+import com.mybatis.anation.*;
+
 import java.lang.reflect.*;
 import java.sql.*;
 import java.util.*;

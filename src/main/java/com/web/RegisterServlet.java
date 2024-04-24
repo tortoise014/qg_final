@@ -4,9 +4,7 @@ import com.dao.mapper.StudentMapper;
 import com.dao.mapper.TeacherMapper;
 import com.dao.pojo.Student;
 import com.dao.pojo.Teacher;
-import com.mybatis.Insert;
 import com.mybatis.MapperProxyFactory;
-import sun.security.util.Password;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

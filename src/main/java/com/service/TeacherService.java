@@ -12,5 +12,11 @@ public class TeacherService {
         Teacher teacher = teacherMapper.select(username, password);
         return teacher;
     }
+    public Teacher selectIdByTeacherUsername(String username){
+        TeacherMapper teacherMapper = MapperProxyFactory.getMapper(TeacherMapper.class);
+        Teacher teacher= teacherMapper.selectIdByTeacherName(username);
+        return teacher;
+
+    }
 
 }
