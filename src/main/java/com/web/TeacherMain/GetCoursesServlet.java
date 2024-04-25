@@ -1,4 +1,4 @@
-package com.web;
+package com.web.TeacherMain;
 
 import com.alibaba.fastjson.JSON;
 import com.dao.pojo.Course;
@@ -41,7 +41,9 @@ public class GetCoursesServlet extends HttpServlet {
         Teacher teacher = teacherService.selectIdByTeacherUsername(username);
         Integer id = teacher.getId();
         System.out.println(id);
+
         List<Course> courseInfo = courseService.getCourseInfo(id);
+        System.out.println(courseInfo);
 
 
         String jsonString = JSON.toJSONString(courseInfo);

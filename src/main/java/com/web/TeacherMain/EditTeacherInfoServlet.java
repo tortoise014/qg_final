@@ -1,4 +1,4 @@
-package com.web;
+package com.web.TeacherMain;
 
 import com.alibaba.fastjson.JSON;
 import com.dao.mapper.TeacherMapper;

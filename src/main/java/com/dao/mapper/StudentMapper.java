@@ -7,10 +7,14 @@ import com.mybatis.anation.Param;
 import com.mybatis.anation.Select;
 import com.mybatis.anation.Update;
 
+import java.util.List;
+
 public interface StudentMapper {
     @Select("select *from students where username=#{username} and password =#{password}")
     Student select(@Param("username") String username, @Param("password") String password);
 
+    @Select("select *from students where Student_id=#{Student_id}")
+    Student selectByStudent_id(@Param("Student_id") Integer Student_id);
 
     @Select("select *from students where username=#{username}")
     Student selectByStudentName(@Param("username") String username);

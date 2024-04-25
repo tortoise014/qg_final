@@ -40,7 +40,7 @@ public class RegisterServlet extends HttpServlet {
             student.setPassword(password);
             student.setName(name);
             student.setStudent_id(student_id);
-            student.setGrande(grade);
+            student.setGrade(grade);
             student.setIntroduction(introduction);
            StudentMapper studentMapper=MapperProxyFactory.getMapper(StudentMapper.class);
             Student student1 = studentMapper.selectByStudentName(username);

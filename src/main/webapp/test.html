@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程与学生信息</title>
+</head>
+<body>
+<div id="app">
+    <div v-for="(item, index) in data" :key="index">
+        <h2>{{ item.course.name }}</h2>
+        <p>{{ item.course.description }}</p>
+        <ul>
+            <li v-for="(student, sIndex) in item.students" :key="sIndex">
+                {{ student.name }} - {{ student.introduction }}
+            </li>
+        </ul>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            data: [] // 这里存放后端传来的数据
+        },
+        mounted() {
+            // 假设从后端获取到的 JSON 数据已经存储在变量 jsonData 中
+            const jsonData = [{"course":{"capacity":101,"description":"An introductory course covering fundamental concepts of computer science.","end_date":"2024-12-15","id":6,"name":"Introduction to Computer Science","start_date":"2024-09-01","teacher_id":1},"students":[{"id":1,"introduction":"我是Alice，喜欢阅读和旅行。","name":"Alice","password":"123","student_id":1,"username":"alice123"}]},{"course":{"capacity":120,"description":"数学","end_date":"2024-09-10","id":16,"name":"数学","start_date":"2024-09-01","teacher_id":1},"students":[{"id":1,"introduction":"我是Alice，喜欢阅读和旅行。","name":"Alice","password":"123","student_id":1,"username":"alice123"}]}];
+
+            // 将获取到的数据赋值给 Vue 实例的 data 属性
+            this.data = jsonData;
+        }
+    });
+</script>
+</body>
+</html>

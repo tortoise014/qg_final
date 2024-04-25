@@ -1,0 +1,42 @@
+package com.web.questions;
+
+import com.alibaba.fastjson.JSONObject;
+import com.dao.mapper.QuestionMapper;
+import com.mybatis.MapperProxyFactory;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
+import java.io.IOException;
+
+@WebServlet("/deleteQuestionServlet")
+public class DeleteQuestionServlet extends HttpServlet {
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        this.doGet(request, response);
+    }
+
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+        BufferedReader reader = request.getReader();
+        StringBuilder jsonBuilder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            jsonBuilder.append(line);
+            System.out.println("111");
+        }
+        String jsonString = jsonBuilder.toString();
+
+        // 解析 JSON 字符串
+        JSONObject jsonObject = JSONObject.parseObject(jsonString);
+        Integer id = jsonObject.getInteger("id");
+        System.out.println(id);
+        QuestionMapper questionMapper = MapperProxyFactory.getMapper(QuestionMapper.class);
+        questionMapper.deleteById(id);
+        response.getWriter().write(" information deleted successfully");
+    }
+}

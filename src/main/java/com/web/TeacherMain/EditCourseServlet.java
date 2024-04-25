@@ -1,7 +1,9 @@
-package com.web;
+package com.web.TeacherMain;
 
 import com.alibaba.fastjson.JSON;
+import com.dao.mapper.CoursesMapper;
 import com.dao.mapper.TeacherMapper;
+import com.dao.pojo.Course;
 import com.dao.pojo.Teacher;
 import com.mybatis.MapperProxyFactory;
 
@@ -11,10 +13,11 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import java.io.BufferedReader;
 import java.io.IOException;
 
-@WebServlet("/teacherInfoServlet")
-public class TeacherInfoServlet extends HttpServlet {
+@WebServlet("/editCourseServlet")
+public class EditCourseServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         this.doGet(request, response);
@@ -22,6 +25,7 @@ public class TeacherInfoServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
         String username = null;
         HttpSession session = request.getSession(false);
         if (session != null) {
@@ -33,13 +37,24 @@ public class TeacherInfoServlet extends HttpServlet {
             // 处理登录过期，例如重定向到登录页面
             response.sendRedirect("/try2/login.html");
         }
-        TeacherMapper teacherMapper = MapperProxyFactory.getMapper(TeacherMapper.class);
-        Teacher teacher = teacherMapper.selectByTeacherName(username);
-        String jsonString = JSON.toJSONString(teacher);
+        BufferedReader br=request.getReader();
+        String params = br.readLine();
+        Course course = JSON.parseObject(params, Course.class);
+        CoursesMapper coursesMapper = MapperProxyFactory.getMapper(CoursesMapper.class);
+        Integer id = course.getId();
+
+        String name = course.getName();
+        String description = course.getDescription();
+        String start_date = course.getStart_date();
+        String end_date = course.getEnd_date();
+        Integer capacity = course.getCapacity();
+        coursesMapper.updateCourse(name,description,start_date,end_date,capacity,id);
+
+        Course course1 = coursesMapper.selectByCourseName(name);
+        String jsonString = JSON.toJSONString(course1);
         response.setContentType("text/json;charset=utf-8");
         response.getWriter().write(jsonString);
 
 
-
-}
+    }
 }

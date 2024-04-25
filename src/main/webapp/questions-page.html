@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>查看题目页面</title>
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+</head>
+<body>
+<div id="app">
+    <h1>查看题目页面</h1>
+
+    <div v-if="questions.length === 0">
+        <p>当前没有题目可供显示。</p>
+    </div>
+    <!-- 题目列表 -->
+    <el-container v-else>
+        <el-main>
+            <el-card v-for="question in questions" :key="question.id" style="margin-bottom: 20px;">
+                <div slot="header" class="clearfix">
+                    <span>{{ question.question_text }}</span>
+                    <el-button type="text" class="float-right" @click="deleteQuestion(question)">删除</el-button>
+                </div>
+                <p>{{ question.correct_answer }}</p>
+                <el-button type="primary" size="mini" @click="showEditDialog(question)">编辑</el-button>
+            </el-card>
+        </el-main>
+    </el-container>
+
+    <!-- 编辑题目模态框 -->
+    <el-dialog :visible.sync="editDialogVisible" title="编辑题目" width="50%">
+        <el-form :model="editQuestionForm" ref="editQuestionForm" label-width="80px">
+            <el-form-item label="题目" prop="question_text">
+                <el-input v-model="editQuestionForm.question_text"></el-input>
+            </el-form-item>
+            <el-form-item label="答案" prop="answer">
+                <el-input type="textarea" v-model="editQuestionForm.correct_answer"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="editDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="saveEditedQuestion">保存</el-button>
+        </div>
+    </el-dialog>
+
+    <!-- 返回按钮 -->
+    <a href="TeacherMain.html">返回主页</a>
+</div>
+
+<script src="js/axios-0.18.0.js"></script>
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            questions: [], // 存储题目数据
+            editDialogVisible: false, // 控制编辑题目模态框的显示和隐藏
+            editQuestionForm: { // 编辑题目的表单数据
+                id: '',
+                question_text: '',
+                correct_answer: ''
+            }
+        },
+        mounted() {
+            // 解析URL参数以获取课程ID，并存储在Vue实例的数据中
+            const urlParams = new URLSearchParams(window.location.search);
+            this.courseId = urlParams.get('courseId');
+            // 在组件创建时异步请求获取所有章节内容
+            // 页面加载后从后端获取题目数据
+            this.loadQuestions();
+        },
+        methods: {
+            // 从后端获取题目数据
+            loadQuestions() {
+                axios.get('getQuestionsServlet', {
+                    params: {
+                        courseId: this.courseId // 将课程ID作为参数发送到后端
+                    }
+                })
+                    .then(response => {
+                        this.questions = response.data; // 将获取到的题目数据赋值给 questions
+                    })
+                    .catch(error => {
+                        console.error('Error loading questions:', error);
+                    });
+            },
+            // 显示编辑题目模态框
+            showEditDialog(question) {
+                // 将题目的信息填充到编辑表单中
+                this.editQuestionForm.id = question.id;
+                this.editQuestionForm.question_text = question.question_text;
+                this.editQuestionForm.answer = question.answer;
+                // 打开编辑模态框
+                this.editDialogVisible = true;
+            },
+            // 保存编辑后的题目
+            saveEditedQuestion() {
+                // 编辑题目的逻辑，可以将编辑后的题目数据发送到后端保存
+                axios.post('saveEditedQuestionServlet', this.editQuestionForm)
+                    .then(response => {
+                        console.log('题目编辑成功:', response.data);
+                        // 关闭编辑模态框
+                        this.editDialogVisible = false;
+                        // 可以选择重新加载题目列表，或者更新特定题目的数据
+                        this.loadQuestions(); // 重新加载题目列表
+                    })
+                    .catch(error => {
+                        console.error('Error saving edited question:', error);
+                    });
+            },
+            // 删除题目
+            deleteQuestion(question) {
+                // 删除题目的逻辑，可以弹出确认对话框等
+                console.log('删除题目：', question);
+                const questionId = question.id;
+                // 向后端发送请求删除题目
+                axios.post('deleteQuestionServlet', { id: questionId })
+                    .then(response => {
+                        console.log('题目删除成功:', response.data);
+                        // 删除成功后更新题目列表
+                        this.questions = this.questions.filter(item => item.id !== questionId);
+                    })
+                    .catch(error => {
+                        console.error('Error deleting question:', error);
+                    });
+            }
+        }
+    });
+</script>
+</body>
+</html>

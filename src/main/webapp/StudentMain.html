@@ -1,58 +1,111 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>学生主页</title>
-    <!-- 引入 Element UI 的 CSS 文件 -->
+    <title>学生主页面</title>
+    <!-- 引入 Element UI 样式 -->
     <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+    <style>
+        /* 设置整个页面的字体和背景颜色 */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f2f5;
+        }
+
+        /* 设置导航栏的样式 */
+        .el-aside {
+            background-color: #545c64;
+            color: #fff;
+        }
+
+        /* 设置菜单项的样式 */
+        .el-menu-item {
+            font-size: 16px;
+        }
+
+        /* 设置内容区域的样式 */
+        .el-main {
+            padding: 20px;
+        }
+
+        /* 设置标题的样式 */
+        h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        /* 设置段落的样式 */
+        p {
+            font-size: 16px;
+            color: #666;
+            line-height: 1.6;
+        }
+    </style>
 </head>
 <body>
 <div id="app">
-    <!-- 左侧导航栏 -->
-    <el-menu :default-active="currentView" class="el-menu-vertical-demo" @select="handleMenuSelect">
-        <el-menu-item index="searchCourse">根据ID搜索课程</el-menu-item>
-        <el-menu-item index="allCourses">所有课程</el-menu-item>
-        <el-menu-item index="myCourses">已选课程</el-menu-item>
-        <el-menu-item index="personalInfo">个人信息</el-menu-item>
-    </el-menu>
+    <!-- 使用 Element UI 的 Container 组件布局 -->
+    <el-container>
+        <!-- 左侧导航栏 -->
+        <el-aside width="200px">
+            <el-menu default-active="1" class="el-menu-vertical-demo" @select="handleMenuSelect">
+                <el-menu-item index="1">个人信息</el-menu-item>
+                <el-menu-item index="2">课程浏览与选择</el-menu-item>
+                <el-menu-item index="3">学习课程</el-menu-item>
+                <el-menu-item index="4">答题情况查看</el-menu-item>
+                <el-menu-item index="5">学习记录统计</el-menu-item>
+                <el-menu-item index="6">学习讨论</el-menu-item>
+                <el-menu-item index="7">修改密码</el-menu-item>
+            </el-menu>
+        </el-aside>
 
-    <!-- 右侧内容区域 -->
-    <div id="content">
-        <div v-show="currentView === 'searchCourse'">
-            <h1>根据ID搜索课程页面</h1>
-            <!-- 添加根据ID搜索课程的内容 -->
-        </div>
-        <div v-show="currentView === 'allCourses'">
-            <h1>所有课程页面</h1>
-            <!-- 添加课程列表 -->
-        </div>
-        <div v-show="currentView === 'myCourses'">
-            <h1>已选课程页面</h1>
-            <!-- 添加已选课程列表 -->
-        </div>
-        <div v-show="currentView === 'personalInfo'">
-            <h1>个人信息页面</h1>
-            <!-- 添加个人信息展示及编辑表单 -->
-        </div>
-    </div>
+        <!-- 右侧内容区 -->
+        <el-main>
+            <!-- 页面主要内容 -->
+            <h1>{{ currentMenuItem }}</h1>
+            <p>这是一个简单的学生主页面，用于演示学生主页面的布局和功能。</p>
+        </el-main>
+    </el-container>
 </div>
 
-<!-- 引入 Vue.js 和 Element UI 的 JavaScript 文件 -->
+<!-- 引入 Vue.js 和 Element UI JavaScript 文件 -->
 <script src="js/axios-0.18.0.js"></script>
 <script src="js/vue.js"></script>
 <script src="element-ui/lib/index.js"></script>
 <script>
     new Vue({
         el: '#app',
-        data() {
-            return {
-                currentView: 'searchCourse'
-            };
+        data: {
+            currentMenuItem: '' // 当前选中的菜单项名称
         },
         methods: {
-            handleMenuSelect(index) {
-                this.currentView = index;
+            handleMenuSelect(index, indexPath) {
+                // 根据索引确定当前选中的菜单项名称
+                switch(index) {
+                    case '1':
+                        this.currentMenuItem = '个人信息';
+                        break;
+                    case '2':
+                        this.currentMenuItem = '课程浏览与选择';
+                        break;
+                    case '3':
+                        this.currentMenuItem = '学习课程';
+                        break;
+                    case '4':
+                        this.currentMenuItem = '答题情况查看';
+                        break;
+                    case '5':
+                        this.currentMenuItem = '学习记录统计';
+                        break;
+                    case '6':
+                        this.currentMenuItem = '学习讨论';
+                        break;
+                    case '7':
+                        this.currentMenuItem = '修改密码';
+                        break;
+                }
             }
         }
     });

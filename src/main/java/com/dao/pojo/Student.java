@@ -6,8 +6,18 @@ public class Student {
     private String password;
     private String name;
     private Integer student_id;
-    private Integer grande;
+    private Integer grade;
     private String introduction;
+
+    public Student(Integer id, String username, String password, String name, Integer student_id, Integer grade, String introduction) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+        this.name = name;
+        this.student_id = student_id;
+        this.grade = grade;
+        this.introduction = introduction;
+    }
 
     @Override
     public String toString() {
@@ -17,7 +27,7 @@ public class Student {
                 ", password='" + password + '\'' +
                 ", name='" + name + '\'' +
                 ", student_id=" + student_id +
-                ", grande=" + grande +
+                ", grade=" + grade +
                 ", introduction='" + introduction + '\'' +
                 '}';
     }
@@ -62,12 +72,12 @@ public class Student {
         this.student_id = student_id;
     }
 
-    public Integer getGrande() {
-        return grande;
+    public Integer getGrade() {
+        return grade;
     }
 
-    public void setGrande(Integer grande) {
-        this.grande = grande;
+    public void setGrade(Integer grade) {
+        this.grade = grade;
     }
 
     public String getIntroduction() {
@@ -75,16 +85,6 @@ public class Student {
     }
 
     public void setIntroduction(String introduction) {
-        this.introduction = introduction;
-    }
-
-    public Student(Integer id, String username, String password, String name, Integer student_id, Integer grande, String introduction) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.name = name;
-        this.student_id = student_id;
-        this.grande = grande;
         this.introduction = introduction;
     }
 

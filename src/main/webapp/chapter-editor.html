@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>章节内容</title>
+    <!-- 引入 Element UI 的 CSS 文件 -->
+    <link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .chapter-card {
+            margin-bottom: 20px;
+        }
+        .editor-form {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+<div id="app" class="container">
+    <div v-if="chapters.length === 0">
+        <p>暂无章节内容，请点击下方按钮添加章节。</p>
+    </div>
+    <el-card v-else v-for="(chapter, index) in chapters" :key="index" class="chapter-card">
+        <h1 slot="header">{{ chapter.title }}</h1>
+        <div>{{ chapter.content }}</div>
+        <el-button type="primary" @click="editChapter(index)">编辑</el-button>
+        <el-button type="danger" @click="deleteChapter(index)">删除</el-button>
+    </el-card>
+
+    <el-button type="primary" @click="addChapter">添加章节</el-button>
+
+    <!-- 编辑章节的对话框 -->
+    <el-dialog title="编辑章节内容" :visible.sync="editDialogVisible">
+        <el-form ref="editForm" :model="editForm" class="editor-form">
+            <el-form-item label="标题" prop="title">
+                <el-input v-model="editForm.title"></el-input>
+            </el-form-item>
+            <el-form-item label="内容" prop="content">
+                <el-input type="textarea" v-model="editForm.content"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="editDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="saveChapter">保存</el-button>
+        </div>
+    </el-dialog>
+
+    <!-- 返回按钮 -->
+    <el-button type="primary" @click="returnToTeacherMain">返回教师主页</el-button>
+</div>
+
+<!-- 引入 Vue.js 和 Element UI 的 JavaScript文件 -->
+<script src="js/vue.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<script src="js/axios-0.18.0.js"></script> <!-- 引入 Axios -->
+
+<script>
+    new Vue({
+        el: '#app',
+        data() {
+            return {
+                chapters: [], // 存储所有章节的信息
+                editDialogVisible: false, // 编辑对话框的可见性
+                editForm: { // 编辑表单数据
+                    chapterId: '', // 章节 ID，用于编辑章节时标识当前编辑的章节
+                    title: '',
+                    content: ''
+                }
+            };
+        },
+        mounted() {
+            // 解析URL参数以获取课程ID，并存储在Vue实例的数据中
+            const urlParams = new URLSearchParams(window.location.search);
+            this.courseId = urlParams.get('courseId');
+            // 在组件创建时异步请求获取所有章节内容
+            this.fetchChapters();
+        },
+        methods: {
+            fetchChapters() {
+                // 发起异步请求获取所有章节内容
+                axios.get('/try2/getChaptersServlet', {
+                    params: {
+                        courseId: this.courseId // 将课程ID作为参数发送到后端
+                    }
+                })
+                    .then(response => {
+                        // 请求成功后更新章节数组
+                        this.chapters = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching chapters:', error);
+                    });
+            },
+            addChapter() {
+                // 在这里触发添加章节的逻辑，例如清空编辑表单并打开编辑对话框
+                this.editForm.chapterId = ''; // 清空章节 ID
+                this.editForm.title = ''; // 清空标题
+                this.editForm.content = ''; // 清空内容
+                this.editDialogVisible = true; // 打开编辑对话框
+            },
+            editChapter(index) {
+                // 弹出编辑对话框，并填充章节标题和内容
+                this.editForm.chapterId = this.chapters[index].id; // 设置要编辑的章节 ID
+                this.editForm.title = this.chapters[index].title;
+                this.editForm.content = this.chapters[index].content;
+                this.editDialogVisible = true;
+            },
+            saveChapter() {
+                // 判断是添加还是编辑操作
+                if (this.editForm.chapterId) {
+                    // 编辑章节操作
+                    axios.post('/try2/editChapterServlet', {
+                        chapterId: this.editForm.chapterId, // 章节 ID
+                        title: this.editForm.title, // 编辑后的章节标题
+                        content: this.editForm.content // 编辑后的章节内容
+                    })
+                        .then(response => {
+                            // 编辑成功的处理逻辑
+                            console.log('Chapter edited successfully:', response.data);
+                            // 关闭编辑对话框
+                            this.editDialogVisible = false;
+                            // 重新获取章节内容列表
+                            this.fetchChapters();
+                        })
+                        .catch(error => {
+                            // 编辑失败的处理逻辑
+                            console.error('Error editing chapter:', error);
+                        });
+                } else {
+                    // 添加章节操作
+                    axios.post('/try2/addChapterServlet', {
+                        courseId: this.courseId, // 课程 ID
+                        title: this.editForm.title, // 新章节的标题
+                        content: this.editForm.content // 新章节的内容
+                    })
+                        .then(response => {
+                            // 添加成功的处理逻辑
+                            console.log('Chapter added successfully:', response.data);
+                            // 关闭编辑对话框
+                            this.editDialogVisible = false;
+                            // 重新获取章节内容列表
+                            this.fetchChapters();
+                        })
+                        .catch(error => {
+                            // 添加失败的处理逻辑
+                            console.error('Error adding chapter:', error);
+                        });
+                }
+            },
+            deleteChapter(index) {
+                // 在这里触发删除章节的逻辑，例如弹出确认框等
+                console.log('正在删除章节:', this.chapters[index]);
+                // 这里可以处理删除章节的逻辑
+                axios.post('/try2/deleteChapterServlet', { chapterId: this.chapters[index].id })
+                    .then(response => {
+                        console.log('Chapter deleted successfully:', response.data);
+                        // 删除成功后重新获取章节内容
+                        this.fetchChapters();
+                    })
+                    .catch(error => {
+                        console.error('Error deleting chapter:', error);
+                    });
+            },
+            returnToTeacherMain() {
+                console.log('点击了返回教师主页按钮');
+
+                // 设置页面跳转的 URL
+                window.location.href = 'TeacherMain.html';
+            }
+        }
+    });
+</script>
+</body>
+</html>
