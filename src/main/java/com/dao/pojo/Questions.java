@@ -1,10 +1,28 @@
 package com.dao.pojo;
 
+import java.util.Objects;
+
 public class Questions {
     private Integer id;
     private Integer course_id;
     private String question_text;
     private String correct_answer;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Questions questions = (Questions) o;
+        return Objects.equals(id, questions.id) &&
+                Objects.equals(course_id, questions.course_id) &&
+                Objects.equals(question_text, questions.question_text) &&
+                Objects.equals(correct_answer, questions.correct_answer);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, course_id, question_text, correct_answer);
+    }
 
     @Override
     public String toString() {

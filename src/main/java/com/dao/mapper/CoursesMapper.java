@@ -6,10 +6,17 @@ import com.mybatis.anation.*;
 import java.util.List;
 
 public interface CoursesMapper {
+
+
+    @Select("select *from courses")
+    List<Course> selectAll();
     @Select("select *from courses where teacher_id=#{teacher_id}")
     List<Course> selectByTeacherId(@Param("teacher_id") Integer teacher_id);
     @Select("select *from courses where name=#{name}")
     Course selectByCourseName(@Param("name") String name);
+
+    @Select("select *from courses where id=#{id}")
+    Course selectById(@Param("id") Integer id);
 
     @Insert("insert into courses(teacher_id,name,description,start_date,end_date,capacity)values(#{teacher_id},#{name},#{description},#{start_date},#{end_date},#{capacity})")
     void Insert(@Param("teacher_id") Integer teacher_id,@Param("name") String name,@Param("description") String description,@Param("start_date") String start_date,

@@ -270,12 +270,12 @@
                 axios.get('teacherInfoServlet')
                     .then(response => {
                         this.userInfo = response.data;
-                        this.editForm = { ...this.userInfo };
+                        this.editForm = {...this.userInfo};
                     })
                     .catch(error => {
                         console.error('Error loading user info:', error);
                     });
-            },goToChapters(course) {
+            }, goToChapters(course) {
                 // 获取要跳转的课程ID
                 const courseId = course.id;
                 // 使用window.location.href进行页面跳转，将课程ID作为参数传递给章节页面

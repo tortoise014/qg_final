@@ -1,5 +1,7 @@
 package com.dao.pojo;
 
+import java.util.Objects;
+
 public class Teacher {
     private Integer id;
     private String username;
@@ -89,5 +91,24 @@ public class Teacher {
     }
 
     public Teacher() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Teacher teacher = (Teacher) o;
+        return Objects.equals(id, teacher.id) &&
+                Objects.equals(username, teacher.username) &&
+                Objects.equals(password, teacher.password) &&
+                Objects.equals(name, teacher.name) &&
+                Objects.equals(email, teacher.email) &&
+                Objects.equals(qq, teacher.qq) &&
+                Objects.equals(introduction, teacher.introduction);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, username, password, name, email, qq, introduction);
     }
 }

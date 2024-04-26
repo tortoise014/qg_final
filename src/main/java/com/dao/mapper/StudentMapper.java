@@ -16,15 +16,17 @@ public interface StudentMapper {
     @Select("select *from students where Student_id=#{Student_id}")
     Student selectByStudent_id(@Param("Student_id") Integer Student_id);
 
+
+
     @Select("select *from students where username=#{username}")
-    Student selectByStudentName(@Param("username") String username);
+    Student selectByStudentUsername(@Param("username") String username);
 
     @Insert("insert INTO students (username, password,name,student_id,grande,introduction) VALUES (#{username}, #{password},#{name},#{student_id},#{grande},#{introduction})")
     void addStudent(@Param("username") String username,@Param("password") String password,@Param("name") String name, @Param("student_id") Integer student_id, @Param("grande") Integer grande,
                     @Param("introduction") String introduction);
 
-    @Update("UPDATE students SET name = #{name}, student_id = #{student_id}, grande = #{grande}, introduction = #{introduction} WHERE username = #{username}")
-    void UpdateStuInfo(@Param("name") String name, @Param("student_id") Integer student_id, @Param("grande") Integer grande,
+    @Update("UPDATE students SET name = #{name}, student_id = #{student_id}, grade = #{grade}, introduction = #{introduction} WHERE username = #{username}")
+    void UpdateStuInfo(@Param("name") String name, @Param("student_id") Integer student_id, @Param("grade") Integer grade,
                        @Param("introduction") String introduction, @Param("username") String username);
 
 }

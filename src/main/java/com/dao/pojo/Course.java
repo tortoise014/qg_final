@@ -1,7 +1,7 @@
 package com.dao.pojo;
 
 
-
+import java.util.Objects;
 
 public class Course {
 
@@ -84,5 +84,24 @@ public class Course {
     }
 
     public Course() {
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Course course = (Course) o;
+        return Objects.equals(id, course.id) &&
+                Objects.equals(teacher_id, course.teacher_id) &&
+                Objects.equals(name, course.name) &&
+                Objects.equals(description, course.description) &&
+                Objects.equals(start_date, course.start_date) &&
+                Objects.equals(end_date, course.end_date) &&
+                Objects.equals(capacity, course.capacity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, teacher_id, name, description, start_date, end_date, capacity);
     }
 }

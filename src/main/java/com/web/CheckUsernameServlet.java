@@ -33,7 +33,7 @@ public class CheckUsernameServlet extends HttpServlet {
             if ("student".equals(identity)) {
                 // 学生
                 StudentMapper studentMapper = MapperProxyFactory.getMapper(StudentMapper.class);
-                Student student = studentMapper.selectByStudentName(username);
+                Student student = studentMapper.selectByStudentUsername(username);
                 exists = (student != null);
             }
             if("teacher".equals(identity)){

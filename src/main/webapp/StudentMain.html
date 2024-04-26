@@ -42,6 +42,27 @@
             color: #666;
             line-height: 1.6;
         }
+
+        /* 设置课程列表的样式 */
+        .course-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 设置按钮的样式 */
+        .action-buttons {
+            margin-top: 10px;
+        }
+        .record-item {
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
     </style>
 </head>
 <body>
@@ -65,12 +86,101 @@
         <el-main>
             <!-- 页面主要内容 -->
             <h1>{{ currentMenuItem }}</h1>
-            <p>这是一个简单的学生主页面，用于演示学生主页面的布局和功能。</p>
+            <div v-if="currentMenuItem === '个人信息'">
+                <!-- 个人信息展示部分 -->
+                <h2>个人信息</h2>
+                <p>姓名: {{ userInfo.name }}</p>
+                <p>学生ID: {{ userInfo.student_id }}</p>
+                <p>年级: {{ userInfo.grade }}</p>
+                <p>简介: {{ userInfo.introduction }}</p>
+                <!-- 添加修改按钮 -->
+                <el-button type="primary" @click="showEditDialog">修改信息</el-button>
+                <!-- 修改信息的对话框 -->
+                <el-dialog :visible.sync="dialogVisible" title="修改个人信息">
+                    <!-- 这里放置修改个人信息的表单 -->
+                    <el-form :model="editInfoForm" label-width="80px">
+                        <el-form-item label="姓名">
+                            <el-input v-model="editInfoForm.name"></el-input>
+                        </el-form-item>
+                        <el-form-item label="学生ID">
+                            <el-input v-model="editInfoForm.student_id"></el-input>
+                        </el-form-item>
+                        <el-form-item label="年级">
+                            <el-input v-model="editInfoForm.grade"></el-input>
+                        </el-form-item>
+                        <el-form-item label="简介">
+                            <el-input type="textarea" v-model="editInfoForm.introduction"></el-input>
+                        </el-form-item>
+                    </el-form>
+                    <div slot="footer" class="dialog-footer">
+                        <el-button @click="dialogVisible = false">取消</el-button>
+                        <el-button type="primary" @click="saveEdit">保存</el-button>
+                    </div>
+                </el-dialog>
+            </div>
+            <div v-else-if="currentMenuItem === '课程浏览与选择'">
+                <!-- 课程浏览与选择部分 -->
+                <h2>课程浏览与选择</h2>
+                <!-- 搜索框 -->
+                <el-input v-model="searchText" placeholder="请输入课程名称"></el-input>
+                <!-- 课程列表 -->
+                <div v-for="course in courses" :key="course.id" class="course-item">
+                    <h3>{{ course.name }}</h3>
+                    <p>开始日期: {{ course.start_date }}</p>
+                    <p>容量: {{ course.capacity }}</p>
+                    <div class="action-buttons">
+                        <el-button type="primary" @click="showCourseDetails(course)">查看详情</el-button>
+                        <el-button type="success" @click="selectCourse(course)">选择</el-button>
+                    </div>
+                </div>
+            </div>
+            <div v-if="currentMenuItem === '学习课程'">
+            <!-- 学习课程部分 -->
+            <h2>学习课程</h2>
+            <!-- 搜索框 -->
+            <el-input v-model="searchText" placeholder="请输入课程名称"></el-input>
+            <!-- 课程列表 -->
+            <div v-for="course in selectedCourses" :key="course.id" class="course-item">
+                <h3>{{ course.description }}</h3>
+                <p>教师: {{ course.teacher_id }}</p>
+                <div class="action-buttons">
+                    <el-button type="primary" @click="startLearning(course)">开始学习</el-button>
+                    <el-button type="primary" @click="startQuiz(course)">开始测验</el-button>
+                    <el-button type="primary" @click="showGrade(course)">查看成绩</el-button>
+                </div>
+            </div>
+        </div>
+            <div v-if="currentMenuItem === '学习记录统计'">
+                <!-- 学习记录统计部分 -->
+                <h2>学习记录统计</h2>
+                <!-- 学生课程学习记录列表 -->
+                <div v-for="course in courseProgress" :key="course.id" class="course-item">
+                    <h3>课程:{{ course.course_id }}</h3>
+                    <p>进度: {{ course.progress }}</p>
+                    <p>成绩: {{ course.grade }}</p>
+                    <p>出勤次数: {{ course.attendance }}</p>
+                </div>
+            </div>
+            <div v-if="currentMenuItem === '答题情况查看'">
+                <!-- 答题情况查看部分 -->
+                <h2>答题情况查看</h2>
+                <!-- 学生答题情况列表 -->
+                <div v-for="record in answerRecords" :key="record.id" class="record-item">
+                    <h3>课程ID: {{ record.course_id }}</h3>
+                    <p>学生回答: {{ record.student_answer }}</p>
+                    <p>得分: {{ record.score }}</p>
+                    <p>回答时间: {{ record.time }}</p>
+                </div>
+            </div>
+            <!-- 其他页面内容 -->
+            <div v-else>
+                <p>其他页面内容</p>
+            </div>
         </el-main>
     </el-container>
 </div>
 
-<!-- 引入 Vue.js 和 Element UI JavaScript 文件 -->
+<!-- 引入 Vue.js、Axios 和 Element UI JavaScript 文件 -->
 <script src="js/axios-0.18.0.js"></script>
 <script src="js/vue.js"></script>
 <script src="element-ui/lib/index.js"></script>
@@ -78,35 +188,213 @@
     new Vue({
         el: '#app',
         data: {
-            currentMenuItem: '' // 当前选中的菜单项名称
+            currentMenuItem: '', // 当前选中的菜单项名称
+            userInfo: {
+                name: '',
+                student_id: '',
+                grade: '',
+                introduction: ''
+                // 其他需要的属性
+            }, // 个人信息数据
+            dialogVisible: false, // 对话框是否可见
+            selectedCourses: [], // 学生选修的课程信息数据
+            editInfoForm: {}, // 修改个人信息的表单数据
+            courses: [], // 课程信息数据
+            courseProgress: [],// 学生jindu情况数据
+            answerRecords: [] ,// 学生答题情况数据
+            searchText: '' // 搜索框中的文本
         },
         methods: {
+            // 处理菜单选择事件
             handleMenuSelect(index, indexPath) {
-                // 根据索引确定当前选中的菜单项名称
-                switch(index) {
+                // 设置当前选中的菜单项名称
+                switch (index) {
                     case '1':
                         this.currentMenuItem = '个人信息';
+
+                        this.getSyuInfo();
                         break;
                     case '2':
                         this.currentMenuItem = '课程浏览与选择';
+                        this.fetchCourses(); // 获取课程信息
                         break;
                     case '3':
                         this.currentMenuItem = '学习课程';
+                        this.fetchSelectedCourses(); // 获取学生选修的课程信息
+
                         break;
                     case '4':
                         this.currentMenuItem = '答题情况查看';
+                        this.fetchAnswerRecords();
                         break;
                     case '5':
                         this.currentMenuItem = '学习记录统计';
+
+                        this.fetchCourseProgress(); // 获取学生选修的课程信息
                         break;
-                    case '6':
-                        this.currentMenuItem = '学习讨论';
-                        break;
-                    case '7':
-                        this.currentMenuItem = '修改密码';
-                        break;
+
+                    // 添加其他菜单项的处理
+                    default:
+                        this.currentMenuItem = '';
                 }
+            },
+            // 获取课程信息
+            fetchCourses() {
+                // 假设您的获取课程信息的 API 是 /api/getCourses
+                axios.get('/try2/getAllCoursesServlet')
+                    .then(response => {
+                        // 请求成功，将返回的课程信息数据赋值给 courses
+                        this.courses = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching courses:', error);
+                    });
+            },
+            // 显示修改信息的对话框
+            showEditDialog() {
+                // 将个人信息数据赋值给修改信息的表单数据
+                this.editInfoForm = Object.assign({}, this.userInfo);
+                this.dialogVisible = true;
+            },
+            startLearning(course) {
+                // 获取课程 ID
+                const courseId = course.id;
+                // 构建跳转链接，将课程 ID 作为参数传递
+                const learnURL = 'course-learn.html?courseId=' + courseId;
+                // 跳转到课程学习页面
+                window.location.href = learnURL;
+            },
+            // 开始测验
+            startQuiz(course) {
+                // 这里实现跳转到课程测验页面的功能
+                // 假设您的课程测验页面地址为 '/course/quiz'
+                window.location.href = 'fill-in-the-blank-quiz.html?courseId=' + course.id;
+            },
+            // 保存修改后的个人信息还是不明白为什么跳转失败
+            saveEdit() {
+                // 假设您的保存个人信息 API 是 /api/saveUserInfo
+                axios.post('/try2/saveUserInfoServlet', this.editInfoForm)
+                    .then(response => {
+                        // 请求成功，关闭对话框，并重新获取个人信息数据更新页面
+                        this.dialogVisible = false;
+                        this.getSyuInfo();
+                        // 这里可以重新获取个人信息数据，更新页面显示
+                    })
+                    .catch(error => {
+                        console.error('Error saving user info:', error);
+                    });
+            },
+            // 查看课程详情
+            showCourseDetails(course) {
+
+                // 弹出课程详情对话框
+                this.$alert(`课程名称: ${course.name}<br>开始日期: ${course.start_date}<br>结束日期: ${course.end_date}<br>描述: ${course.description}<br>容量: ${course.capacity}`, '课程详情', {
+                    dangerouslyUseHTMLString: true,
+                    confirmButtonText: '关闭',
+                });
+            },
+            // 选择课程
+            selectCourse(course) {
+                // 弹出确认对话框
+                this.$confirm(`确定要选择课程 "${course.name}" 吗？`, '确认选择', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    // 用户点击了确认按钮
+                    // 这里可以实现将课程添加到已选课程列表，并和后台交互添加到数据库
+                    console.log('Course selected:', course);
+                    // 这里可以调用与后台交互的方法，比如添加课程到数据库
+                    this.addToSelectedCourses(course);
+                }).catch(() => {
+                    // 用户点击了取消按钮
+                    console.log('User canceled the selection.');
+                });
+            },
+            addToSelectedCourses(course) {
+                // 在这里编写将课程添加到已选课程列表并与后台交互的逻辑
+                // 假设您的添加课程到已选课程列表的方法是 addToSelectedCourses
+                // 假设您的与后台交互的方法是 saveSelectedCourseToDatabase
+                // 可以使用 axios 或其他方法发送请求到后台
+
+                // 示例代码
+                // 添加课程到已选课程列表
+                this.selectedCourses.push(course);
+
+                // 与后台交互，将课程添加到数据库
+                axios.post('/try2/addSelectedCourseServlet', { courseId: course.id })
+                    .then(response => {
+                        // 后台返回成功响应后的处理
+                        console.log('Course added to database:', course);
+                    })
+                    .catch(error => {
+                        // 后台返回错误响应后的处理
+                        console.error('Error adding course to database:', error);
+                    });
+            },
+            // 获取学生选修的课程信息
+            fetchSelectedCourses() {
+                // 假设您的获取学生选修课程信息的 API 是 /api/getSelectedCourses
+                axios.get('/try2/getStuCoursesServlet')
+                    .then(response => {
+                        // 请求成功，将返回的学生选修课程信息数据赋值给 selectedCourses
+                        this.selectedCourses = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching selected courses:', error);
+                    });
+            },
+
+            // 查看成绩
+            showGrade(course) {
+                // 这里实现弹出查看成绩的对话框功能
+                this.$alert('您的成绩为：80 分', '成绩', {
+                    confirmButtonText: '确定',
+                    callback: action => {
+                        // 点击确定按钮后的回调
+                    }
+                });
+            },
+
+            // 获取学生课程学习记录
+            fetchCourseProgress() {
+                // 假设您的获取学生课程学习记录的 API 是 /api/getCourseProgress
+                axios.get('/try2/getCourseProgressServlet')
+                    .then(response => {
+                        // 请求成功，将返回的学生课程学习记录数据赋值给 courseProgress
+                        this.courseProgress = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching course progress:', error);
+                    });
+            },
+            fetchAnswerRecords() {
+                // 假设您的获取学生答题情况信息的 API 是 /api/getAnswerRecords
+                axios.get('/try2/getAnswerRecordsServlet')
+                    .then(response => {
+                        // 请求成功，将返回的学生答题情况数据赋值给 answerRecords
+                        this.answerRecords = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching answer records:', error);
+                    });
+            },
+            getSyuInfo() {
+                axios.get('/try2/getUserInfoServlet')
+                    .then(response => {
+                        // 请求成功，将返回的个人信息数据赋值给 userInfo
+                        this.userInfo = response.data;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user info:', error);
+                    });
             }
+        },
+        mounted() {
+            this.currentMenuItem = '个人信息';
+            this.getSyuInfo();
+            // 在页面加载时获取个人信息数据，假设您的获取个人信息 API 是 /api/getUserInfo
+
         }
     });
 </script>

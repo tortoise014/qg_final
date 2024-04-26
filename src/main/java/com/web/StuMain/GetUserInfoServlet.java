@@ -1,10 +1,8 @@
-package com.web.TeacherMain;
+package com.web.StuMain;
 
 import com.alibaba.fastjson.JSON;
-import com.dao.mapper.CoursesMapper;
-import com.dao.mapper.TeacherMapper;
-import com.dao.pojo.Course;
-import com.dao.pojo.Teacher;
+import com.dao.mapper.StudentMapper;
+import com.dao.pojo.Student;
 import com.mybatis.MapperProxyFactory;
 
 import javax.servlet.ServletException;
@@ -13,11 +11,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedReader;
 import java.io.IOException;
 
-@WebServlet("/createCourseServlet")
-public class CreateCourseServlet extends HttpServlet {
+@WebServlet("/getUserInfoServlet")
+public class GetUserInfoServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         this.doGet(request, response);
@@ -25,7 +22,6 @@ public class CreateCourseServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
 
         String username = null;
         HttpSession session = request.getSession(false);
@@ -38,20 +34,10 @@ public class CreateCourseServlet extends HttpServlet {
             // 处理登录过期，例如重定向到登录页面
             response.sendRedirect("/try2/login.html");
         }
-        TeacherMapper teacherMapper = MapperProxyFactory.getMapper(TeacherMapper.class);
-        Teacher teacher = teacherMapper.selectByTeacherName(username);
-        BufferedReader br=request.getReader();
-        String params = br.readLine();
-        Course course = JSON.parseObject(params, Course.class);
-        CoursesMapper coursesMapper = MapperProxyFactory.getMapper(CoursesMapper.class);
-
-        Integer teacher_id = teacher.getId();
-        String name = course.getName();
-        String description = course.getDescription();
-        String start_date = course.getStart_date();
-        String end_date = course.getEnd_date();
-        Integer capacity = course.getCapacity();
-        coursesMapper.Insert(teacher_id,name,description,start_date,end_date,capacity);
-        response.getWriter().write("courses create successfully");
+        StudentMapper studentMapper = MapperProxyFactory.getMapper(StudentMapper.class);
+        Student student = studentMapper.selectByStudentUsername(username);
+        String jsonString = JSON.toJSONString(student);
+        response.setContentType("text/json;charset=utf-8");
+        response.getWriter().write(jsonString);
     }
 }

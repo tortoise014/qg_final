@@ -43,7 +43,7 @@ public class RegisterServlet extends HttpServlet {
             student.setGrade(grade);
             student.setIntroduction(introduction);
            StudentMapper studentMapper=MapperProxyFactory.getMapper(StudentMapper.class);
-            Student student1 = studentMapper.selectByStudentName(username);
+            Student student1 = studentMapper.selectByStudentUsername(username);
             System.out.println("zhixlm");
             if(student1==null){
                 response.setContentType("text/html;charset=utf-8");
