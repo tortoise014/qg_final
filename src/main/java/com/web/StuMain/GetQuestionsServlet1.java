@@ -47,9 +47,9 @@ public class GetQuestionsServlet1 extends HttpServlet {
         Integer course_id = Integer.valueOf(request.getParameter("courseId"));
         StudentProgressMapper studentProgressMapper = MapperProxyFactory.getMapper(StudentProgressMapper.class);
         StudentProgress studentProgress = studentProgressMapper.selectByStuIdCourseId(course_id, student_id);
-        Integer attendance = studentProgress.getAttendance();
+/*        Integer attendance = studentProgress.getAttendance();
         attendance+=1;
-        studentProgressMapper.UpdateStuProInfo(attendance,course_id,student_id);
+        studentProgressMapper.UpdateStuProInfo(attendance,course_id,student_id);*/
 
 
         QuestionMapper questionMapper = MapperProxyFactory.getMapper(QuestionMapper.class);
