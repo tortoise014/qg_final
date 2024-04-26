@@ -206,10 +206,10 @@
             <div v-if="records.length === 0">暂无学生答题记录</div>
             <div v-else>
                 <div class="record-item" v-for="(record, index) in records" :key="index">
-                    <p>学生姓名：{{ record.studentName }}</p>
-                    <p>课程名称：{{ record.courseName }}</p>
-                    <p>题目名称：{{ record.questionName }}</p>
-                    <p>学生答案：{{ record.answer }}</p>
+                    <p>课程id：{{ record.course_id }}</p>
+                    <p>题目id：{{ record.question_id }}</p>
+                    <p>学生答案：{{ record.student_answer }}</p>
+                    <p>回答时间：{{ record.time}}</p>
                     <p>得分：{{ record.score }}</p>
                 </div>
             </div>
@@ -314,11 +314,7 @@
             },
             // 加载学生答题记录
             loadStudentRecords() {
-                axios.get('getStudentRecordsServlet', {
-                    params: {
-                        courseId: this.form.courseId
-                    }
-                })
+                axios.post('getStudentRecordsServlet')
                     .then(response => {
                         this.records = response.data;
                     })
@@ -333,6 +329,8 @@
                     this.loadCourses();
                 } else if (index === 'viewStudents') {
                     this.loadStudents();
+                }else if(index === 'viewAnswers'){
+                    this.loadStudentRecords();
                 }
             },
             // 处理点击修改按钮
@@ -453,6 +451,8 @@
                 this.loadCourses(); // 加载课程列表
             } else if (this.currentView === 'viewStudents') {
                 this.loadStudents(); // 加载学生列表
+            }else if(this.currentView === 'viewAnswers'){
+                this.loadStudentRecords()
             }
 
         }

@@ -1,0 +1,65 @@
+/* register.css */
+
+/* Body styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f2f2f2;
+}
+
+/* Container styles */
+#app {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.form-div {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.reg-content {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.reg-content h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #333;
+}
+
+.reg-content span {
+    color: #666;
+}
+
+.reg-content a {
+    color: #007BFF;
+}
+
+/* Form styles */
+.el-form-item__label {
+    font-size: 14px;
+}
+
+.el-input {
+    width: 300px;
+}
+
+.buttons {
+    text-align: center;
+}
+
+/* Error message styles */
+.err-msg {
+    color: red;
+}
+
+.clear {
+    clear: both;
+}

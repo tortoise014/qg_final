@@ -3,54 +3,150 @@
 <head>
     <meta charset="UTF-8">
     <title>欢迎注册</title>
-    <link href="css/register.css" rel="stylesheet">
+
+    <!-- 引入Vue和Axios的CDN链接 -->
+    <script src="js/vue.js"></script>
+    <script src="js/axios-0.18.0.js"></script>
+    <link href="css/register1.css" rel="stylesheet">
+    <!-- 引入Element UI的样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入Element UI的脚本 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 </head>
 <body>
-
-<div class="form-div">
-    <div class="reg-content">
-        <h1>欢迎注册</h1>
-        <span>已有帐号？</span> <a href="login.html">登录</a>
-    </div>
-    <form id="reg-form" action="/try2/registerServlet" method="get">
-
-        <table>
-
-            <tr>
-                <td>用户名</td>
-                <td class="inputs">
-                    <input name="username" type="text" id="username">
-                    <br>
-                    <span id="username_err" class="err_msg" style="display: none">用户名不太受欢迎</span>
-                </td>
-
-            </tr>
-
-            <tr>
-                <td>密码</td>
-                <td class="inputs">
-                    <input name="password" type="password" id="password">
-                    <br>
-                    <span id="password_err" class="err_msg" style="display: none">密码格式有误</span>
-                </td>
-            </tr>
-            <tr>
-                <td class="inputs">
-                    <select name="identity" id="identity">
-                        <option value="student">学生</option>
-                        <option value="teacher">老师</option>
-                    </select>
-                </td>
-            </tr>
-
-        </table>
-
-        <div class="buttons">
-            <input value="注 册" type="submit" id="reg_btn">
+<div id="app">
+    <div class="form-div">
+        <div class="reg-content">
+            <h1>欢迎注册</h1>
+            <span>已有帐号？</span> <a href="login.html">登录</a>
         </div>
-        <br class="clear">
-    </form>
+        <el-form :model="form" ref="form" label-width="80px" @submit.native.prevent="submitForm">
+            <el-form-item label="用户名" prop="username">
+                <el-input v-model="form.username" @blur="checkUsername"></el-input>
+                <span v-if="usernameExists" style="color: red;">用户名已存在</span>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+                <el-input type="password" v-model="form.password"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
 
+            <el-form-item label="学生ID" prop="student_id" v-if="!showTeacherFields">
+                <el-input v-model="form.student_id"></el-input>
+            </el-form-item>
+            <el-form-item label="年级" prop="grade" v-if="!showTeacherFields">
+                <el-input v-model="form.grade"></el-input>
+            </el-form-item>
+            <el-form-item label="个人介绍" prop="introduction" v-if="!showTeacherFields">
+                <el-input type="textarea" v-model="form.introduction"></el-input>
+            </el-form-item>
+
+            <el-form-item label="邮箱" prop="email" v-if="showTeacherFields">
+                <el-input v-model="form.email"></el-input>
+            </el-form-item>
+            <el-form-item label="QQ" prop="qq" v-if="showTeacherFields">
+                <el-input v-model="form.qq"></el-input>
+            </el-form-item>
+            <el-form-item label="个人介绍" prop="introduction" v-if="showTeacherFields">
+                <el-input type="textarea" v-model="form.introduction"></el-input>
+            </el-form-item>
+
+            <el-form-item label="身份" prop="identity">
+                <el-radio-group v-model="form.identity" @change="toggleForm">
+                    <el-radio label="student">学生</el-radio>
+                    <el-radio label="teacher">老师</el-radio>
+                </el-radio-group>
+            </el-form-item>
+
+            <el-form-item>
+                <el-button type="primary" native-type="submit">注册</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
 </div>
+
+<script>
+    new Vue({
+        el: '#app',
+        data: {
+            form: {
+                username: '',
+                password: '',
+                name: '',
+                student_id: '',
+                grade: '',
+                introduction: '',
+                email: '',
+                qq: '',
+                identity: 'student'
+            },
+            usernameExists: false, // 用于标记用户名是否存在
+            showTeacherFields: false // 控制是否显示老师专有的表单项
+        },
+        methods: {
+            checkUsername() {
+                const username = this.form.username;
+                const identity = this.form.identity;
+                axios.get('/try2/checkUsernameServlet', { params: { username ,identity} })
+                    .then(response => {
+                        // 假设后端返回一个对象，其中 'exists' 属性指示用户名是否存在
+                        this.usernameExists = response.data.exists;
+                    })
+                    .catch(error => {
+                        console.error('检查用户名时发生错误:', error);
+                    });
+            },
+            submitForm() {
+                // 前端验证逻辑
+                if (this.form.username === '' || this.form.password === '' || this.form.name === '') {
+                    // 如果用户名、密码或姓名等字段有任何一个为空，显示错误消息或者进行其他处理
+                    console.error('用户名、密码和姓名不能为空');
+                    return; // 终止函数执行
+                }
+
+                if (this.usernameExists) {
+                    // 如果用户名已存在，显示错误消息或者进行其他处理
+                    console.error('用户名已存在');
+                    return; // 终止函数执行
+                }
+
+                // 如果前端验证通过，可以将表单数据发送到后端进行进一步验证和处理
+                // 你可以使用 Axios 或者其他网络请求库发送 POST 请求
+                axios.post('/try2/registerServlet', this.form)
+                    .then(response => {
+                        // 请求成功的处理逻辑
+                        console.log('注册成功');
+                        // 判断后端返回的消息是否为 "注册成功"
+                        if (response.data === "注册成功") {
+                            // 重定向到登录页面
+                            window.location.href = '/try2/login.html';
+                        } else {
+                            // 其他处理逻辑，比如显示错误消息
+                            console.error('注册失败:', response.data);
+                        }
+                        // 可以根据后端返回的数据执行相应的操作，比如跳转页面等
+                    })
+                    .catch(error => {
+                        // 请求失败的处理逻辑
+                        console.error('注册失败:', error);
+                        // 可以根据错误类型进行相应的处理，比如显示错误消息等
+                        alert('注册失败，请稍后重试或联系管理员。');
+                    });
+            },
+            toggleForm() {
+                // 将选择的身份同步到 Vue 实例的 form 数据中
+                this.form.student_id = '';
+                this.form.grade = '';
+                this.form.introduction = '';
+                this.form.email = '';
+                this.form.qq = '';
+
+                // 根据选择的身份来设置是否显示老师专有的表单项
+                this.showTeacherFields = this.form.identity === 'teacher';
+            }
+        }
+    });
+</script>
 </body>
 </html>

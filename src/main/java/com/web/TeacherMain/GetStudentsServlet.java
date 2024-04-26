@@ -64,7 +64,11 @@ public class GetStudentsServlet extends HttpServlet {
                 Integer coursesId = course.getId();
                 System.out.println(coursesId);
                 List<Student> studentsInCourse = new ArrayList<>();
+
                 List<StudentCourses> studentCourses = studentCoursesMapper.selectByCourseId(coursesId);
+                if(studentCourses==null){
+                    continue;
+                }
                 System.out.println(studentCourses);
                 System.out.println("daozhe");
                 for (StudentCourses studentCours : studentCourses) {

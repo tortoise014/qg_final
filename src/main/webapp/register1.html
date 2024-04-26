@@ -7,103 +7,63 @@
     <!-- 引入Vue和Axios的CDN链接 -->
     <script src="js/vue.js"></script>
     <script src="js/axios-0.18.0.js"></script>
+    <link href="css/register.css" rel="stylesheet">
+    <!-- 引入Element UI的样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+    <!-- 引入Element UI的脚本 -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script>
 </head>
 <body>
 <div id="app">
+
     <div class="form-div">
         <div class="reg-content">
             <h1>欢迎注册</h1>
             <span>已有帐号？</span> <a href="login.html">登录</a>
         </div>
-        <form id="reg-form" action="/try2/registerServlet" method="post">
+        <el-form :model="form" ref="form" label-width="80px" @submit.native.prevent="submitForm">
+            <el-form-item label="用户名" prop="username">
+                <el-input v-model="form.username" @blur="checkUsername"></el-input>
+                <span v-if="usernameExists" style="color: red;">用户名已存在</span>
+            </el-form-item>
+            <el-form-item label="密码" prop="password">
+                <el-input type="password" v-model="form.password"></el-input>
+            </el-form-item>
+            <el-form-item label="姓名" prop="name">
+                <el-input v-model="form.name"></el-input>
+            </el-form-item>
 
-            <table>
-                <!-- ... 省略其他表单行 ... -->
+            <el-form-item label="学生ID" prop="student_id" v-if="!showTeacherFields">
+                <el-input v-model="form.student_id"></el-input>
+            </el-form-item>
+            <el-form-item label="年级" prop="grade" v-if="!showTeacherFields">
+                <el-input v-model="form.grade"></el-input>
+            </el-form-item>
+            <el-form-item label="个人介绍" prop="introduction" v-if="!showTeacherFields">
+                <el-input type="textarea" v-model="form.introduction"></el-input>
+            </el-form-item>
 
-                <tr>
-                    <td>用户名</td>
-                    <td class="inputs">
-                        <input name="username" type="text" id="username" v-model="form.username"  @blur="checkUsername">
-                        <br>
-                        <span id="username_err" class="err_msg" v-if="usernameExists">用户名已存在</span>
-                    </td>
-                </tr>
-                <tr>
-                    <td>密码</td>
-                    <td class="inputs">
-                        <input name="password" type="password" id="password">
-                        <br>
-                        <span id="password_err" class="err_msg" style="display:none">密码格式有误</span>
-                    </td>
-                </tr>
+            <el-form-item label="邮箱" prop="email" v-if="showTeacherFields">
+                <el-input v-model="form.email"></el-input>
+            </el-form-item>
+            <el-form-item label="QQ" prop="qq" v-if="showTeacherFields">
+                <el-input v-model="form.qq"></el-input>
+            </el-form-item>
+            <el-form-item label="个人介绍" prop="introduction" v-if="showTeacherFields">
+                <el-input type="textarea" v-model="form.introduction"></el-input>
+            </el-form-item>
 
-                <tr>
-                    <td>姓名</td>
-                    <td class="inputs">
-                        <input name="name" type="text" id="name">
-                    </td>
-                </tr>
+            <el-form-item label="身份" prop="identity">
+                <el-radio-group v-model="form.identity" @change="toggleForm">
+                    <el-radio label="student">学生</el-radio>
+                    <el-radio label="teacher">老师</el-radio>
+                </el-radio-group>
+            </el-form-item>
 
-                <tr id="student-info" style="display: none;">
-                    <td>学生ID</td>
-                    <td class="inputs">
-                        <input name="student_id" type="text" id="student_id">
-                    </td>
-                </tr>
-
-                <tr id="student-grade" style="display: none;">
-                    <td>年级</td>
-                    <td class="inputs">
-                        <input name="grade" type="text" id="grade">
-                    </td>
-                </tr>
-
-                <tr id="student-introduction" style="display: none;">
-                    <td>个人介绍</td>
-                    <td class="inputs">
-                        <textarea name="introduction" id="S_introduction" rows="4"></textarea>
-                    </td>
-                </tr>
-
-                <tr id="teacher-info" style="display: none;">
-                    <td>邮箱</td>
-                    <td class="inputs">
-                        <input name="email" type="email" id="email">
-                    </td>
-                </tr>
-
-                <tr id="teacher-qq" style="display: none;">
-                    <td>QQ</td>
-                    <td class="inputs">
-                        <input name="qq" type="text" id="qq">
-                    </td>
-                </tr>
-
-                <tr id="teacher-introduction" style="display: none;">
-                    <td>个人介绍</td>
-                    <td class="inputs">
-                        <textarea name="introduction" id="T_introduction" rows="4"></textarea>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>身份</td>
-                    <td class="inputs">
-                        <select name="identity" id="identity" @change="toggleForm">
-                            <option value="student">学生</option>
-                            <option value="teacher">老师</option>
-                        </select>
-                    </td>
-                </tr>
-
-
-            </table>
-
-            <div class="buttons">
-                <input value="注 册" type="submit" id="reg_btn" >
-            </div>
-            <br class="clear">
-        </form>
+            <el-form-item>
+                <el-button type="primary" native-type="submit">注册</el-button>
+            </el-form-item>
+        </el-form>
     </div>
 </div>
 
@@ -123,6 +83,7 @@
                 identity: 'student'
             },
             usernameExists: false, // 用于标记用户名是否存在
+            showTeacherFields: false // 控制是否显示老师专有的表单项
         },
         methods: {
             checkUsername() {
@@ -137,10 +98,7 @@
                         console.error('检查用户名时发生错误:', error);
                     });
             },
-            submitForm(event) {
-                // 阻止表单默认提交行为
-                event.preventDefault();
-
+            submitForm() {
                 // 前端验证逻辑
                 if (this.form.username === '' || this.form.password === '' || this.form.name === '') {
                     // 如果用户名、密码或姓名等字段有任何一个为空，显示错误消息或者进行其他处理
@@ -156,7 +114,7 @@
 
                 // 如果前端验证通过，可以将表单数据发送到后端进行进一步验证和处理
                 // 你可以使用 Axios 或者其他网络请求库发送 POST 请求
-                axios.post('/try2/registerServlet', { params: { username ,identity} })
+                axios.post('/try2/registerServlet', this.form)
                     .then(response => {
                         // 请求成功的处理逻辑
                         console.log('注册成功');
@@ -178,33 +136,15 @@
                     });
             },
             toggleForm() {
-                var identitySelect = document.getElementById("identity");
-                var studentInfoRow = document.getElementById("student-info");
-                var studentGradeRow = document.getElementById("student-grade");
-                var studentIntroductionRow = document.getElementById("student-introduction");
-                var teacherInfoRow = document.getElementById("teacher-info");
-                var teacherQQRow = document.getElementById("teacher-qq");
-                var teacherIntroductionRow = document.getElementById("teacher-introduction");
-
-                if (identitySelect.value === "student") {
-                    studentInfoRow.style.display = "table-row";
-                    studentGradeRow.style.display = "table-row";
-                    studentIntroductionRow.style.display = "table-row";
-
-                    teacherInfoRow.style.display = "none";
-                    teacherQQRow.style.display = "none";
-                    teacherIntroductionRow.style.display = "none";
-                } else {
-                    studentInfoRow.style.display = "none";
-                    studentGradeRow.style.display = "none";
-                    studentIntroductionRow.style.display = "none";
-
-                    teacherInfoRow.style.display = "table-row";
-                    teacherQQRow.style.display = "table-row";
-                    teacherIntroductionRow.style.display = "table-row";
-                }
                 // 将选择的身份同步到 Vue 实例的 form 数据中
-                this.form.identity = identitySelect.value;
+                this.form.student_id = '';
+                this.form.grade = '';
+                this.form.introduction = '';
+                this.form.email = '';
+                this.form.qq = '';
+
+                // 根据选择的身份来设置是否显示老师专有的表单项
+                this.showTeacherFields = this.form.identity === 'teacher';
             }
         }
     });

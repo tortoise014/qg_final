@@ -24,10 +24,10 @@
             </select>
         </p>
         <!-- 添加记住密码的复选框 -->
-        <p>
+<!--        <p>
             <input type="checkbox" id="rememberMe" value="1" name="rememberMe">
             <label for="rememberMe">Remember me</label>
-        </p>
+        </p>-->
         <div id="subDiv">
             <input type="submit" class="button" value="login up">
             <input type="reset" class="button" value="reset">&nbsp;&nbsp;&nbsp;
@@ -39,34 +39,14 @@
     // 获取 URL 参数
     const urlParams = new URLSearchParams(window.location.search);
     const encodedLoginMsg = urlParams.get('login_msg');
-    const loginMsg = decodeURIComponent(encodedLoginMsg);
-
+    const loginMsg = encodedLoginMsg ? decodeURIComponent(encodedLoginMsg) : '';
     console.log('Error message from URL:', loginMsg); // 输出获取到的错误消息
 
     // 显示消息
     if (loginMsg) {
         document.getElementById('errorMsg').innerText = loginMsg;
     }
-    document.addEventListener("DOMContentLoaded", function() {
-        // 获取所有名为 'username' 的cookie
-        var usernameCookies = document.cookie.split('; ').filter(function(c) {
-            return c.startsWith('username=');
-        });
-        if (usernameCookies.length > 0) {
-            var username = usernameCookies[0].split('=')[1];
-            document.getElementById('username').textContent = username;
-        }
-    });
-    document.addEventListener("DOMContentLoaded", function() {
-        // 获取所有名为 'password' 的cookie
-        var usernameCookies = document.cookie.split('; ').filter(function(c) {
-            return c.startsWith('password=');
-        });
-        if (usernameCookies.length > 0) {
-            var password = usernameCookies[0].split('=')[1];
-            document.getElementById('password').textContent = password;
-        }
-    });
+
 
 </script>
 
