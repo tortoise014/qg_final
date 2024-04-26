@@ -21,8 +21,8 @@ public interface StudentMapper {
     @Select("select *from students where username=#{username}")
     Student selectByStudentUsername(@Param("username") String username);
 
-    @Insert("insert INTO students (username, password,name,student_id,grande,introduction) VALUES (#{username}, #{password},#{name},#{student_id},#{grande},#{introduction})")
-    void addStudent(@Param("username") String username,@Param("password") String password,@Param("name") String name, @Param("student_id") Integer student_id, @Param("grande") Integer grande,
+    @Insert("insert INTO students (username, password,name,student_id,grade,introduction) VALUES (#{username}, #{password},#{name},#{student_id},#{grade},#{introduction})")
+    void addStudent(@Param("username") String username,@Param("password") String password,@Param("name") String name, @Param("student_id") Integer student_id, @Param("grade") Integer grade,
                     @Param("introduction") String introduction);
 
     @Update("UPDATE students SET name = #{name}, student_id = #{student_id}, grade = #{grade}, introduction = #{introduction} WHERE username = #{username}")

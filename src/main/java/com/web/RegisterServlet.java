@@ -1,5 +1,6 @@
 package com.web;
 
+import com.alibaba.fastjson.JSONObject;
 import com.dao.mapper.StudentMapper;
 import com.dao.mapper.TeacherMapper;
 import com.dao.pojo.Student;
@@ -11,6 +12,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
@@ -23,18 +25,36 @@ public class RegisterServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String username = request.getParameter("username");
-        String password = request.getParameter("password");
-        String name = request.getParameter("name");
 
-        String introduction = request.getParameter("introduction");
+        BufferedReader reader = request.getReader();
+        StringBuilder jsonBuilder = new StringBuilder();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            jsonBuilder.append(line);
+            System.out.println("111");
+        }
+        String jsonString = jsonBuilder.toString();
 
-        String identity = request.getParameter("identity");
+        // 解析 JSON 字符串
+        JSONObject jsonObject = JSONObject.parseObject(jsonString);
+
+        // 提取所需的数据
+
+
+        String username = jsonObject.getString("username");
+        String identity = jsonObject.getString("identity");
+
+        String password = jsonObject.getString("password");
+        String name = jsonObject.getString("name");
+        String introduction = jsonObject.getString("introduction");
+
+        System.out.println(identity);
         System.out.println("zhixlm");
         PrintWriter writer = response.getWriter();
         if ("student".equals(identity)){
-            Integer student_id = Integer.valueOf(request.getParameter("student_id"));
-            Integer grade = Integer.valueOf(request.getParameter("grade"));
+            Integer student_id = jsonObject.getInteger("student_id");
+            Integer grade = jsonObject.getInteger("grade");
+
             Student student=new Student();
             student.setUsername(username);
             student.setPassword(password);
@@ -49,22 +69,17 @@ public class RegisterServlet extends HttpServlet {
                 response.setContentType("text/html;charset=utf-8");
                 System.out.println("没找到可以加");
                 studentMapper.addStudent(username,password,name,student_id,grade,introduction);
-
-                response.setContentType("text/html;charset=utf-8");
-
-                request.getRequestDispatcher("/login.html").forward(request, response);
+                response.getWriter().write("success");
                 //跳到完善信息
-
             }else{
-
+                response.setContentType("text/html;charset=utf-8");
                 response.setContentType("text/html;charset=utf-8");
                 response.getWriter().write("学生用户名已存在");
-                request.getRequestDispatcher("/login.html").forward(request,response);
             }
 
         }else{
-            String email = request.getParameter("email");
-            String qq = request.getParameter("qq");
+            String email = jsonObject.getString("email");
+            String qq = jsonObject.getString("qq");
             Teacher teacher=new Teacher();
             teacher.setUsername(username);
             teacher.setPassword(password);
@@ -74,11 +89,7 @@ public class RegisterServlet extends HttpServlet {
                 response.setContentType("text/html;charset=utf-8");
                 teacherMapper.addTeacher(username,password,name,email,qq,introduction);
 
-                System.out.println("zhixlm");
-                response.setContentType("text/html;charset=utf-8");
-
-                request.getRequestDispatcher("/login.html").forward(request, response);
-
+                response.getWriter().write("success");
 
             }else{
                 response.setContentType("text/html;charset=utf-8");

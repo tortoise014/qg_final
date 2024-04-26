@@ -39,7 +39,7 @@ public class AddQuestionServlet extends HttpServlet {
         String question_text = jsonObject.getString("description");
         System.out.println(question_text);
         String correct_answer = jsonObject.getString("answer");
-        System.out.println();
+
         QuestionMapper questionMapper = MapperProxyFactory.getMapper(QuestionMapper.class);
         questionMapper.Insert(chapter_id,question_text,correct_answer);
 
